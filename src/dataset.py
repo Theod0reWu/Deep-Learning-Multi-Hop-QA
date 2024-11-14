@@ -1,6 +1,5 @@
-from datasets import load_dataset
+import pandas as pd
 
-frames_benchmark = load_dataset("google/frames-benchmark")
+df = pd.read_csv("hf://datasets/google/frames-benchmark/test.tsv", sep="\t")
 
-print(frames_benchmark)
-
+print(df.head(5))
