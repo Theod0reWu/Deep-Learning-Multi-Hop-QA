@@ -1,11 +1,11 @@
 import pandas as pd
 
-    def extract_keywords(links):
-        keywords = []
-        for link in links.split(","):
-            if "https://en.wikipedia.org/wiki/" in link:
-                keywords.append(link.split("https://en.wikipedia.org/wiki/")[1])
-        return ",".join(keywords)
+def extract_keywords(links):
+    keywords = []
+    for link in links.split(","):
+        if "https://en.wikipedia.org/wiki/" in link:
+            keywords.append(link.split("https://en.wikipedia.org/wiki/")[1])
+    return ",".join(keywords)
 
 def get_frames_dataset():
     df = pd.read_csv("hf://datasets/google/frames-benchmark/test.tsv", sep="\t")

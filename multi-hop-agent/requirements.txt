@@ -1,0 +1,6 @@
+openai
+langchain
+langchain-community
+requests
+anthropic
+transformers
