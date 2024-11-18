@@ -1,17 +1,25 @@
 import time
 from tools.wiki_tool import get_wikipedia_article
 from prompts.prompt_templates import prompt_template
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
 
-# Initialize OpenAI language model
-from langchain.chat_models import ChatOpenAI
+# Load environment variables from the .env file
+load_dotenv()
 
-# Initialize the language model for GPT, Claude, etc.
-def select_model(model_name="GPT"):
-    if model_name == "GPT":
-        return ChatOpenAI(temperature=0)  # Adjust the temperature based on your use case
-    # Add other models like Claude, Gemini, etc. here
-    else:
-        raise ValueError("Unsupported model")
+# Use the loaded API key to configure Gemini
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Function to initialize the Gemini model
+def select_model(model_name="Gemini"):
+    try:
+        # Since the API key is configured globally, we don't need to reconfigure it here.
+        model = genai.GenerativeModel("gemini-1.5-flash")  # You can replace with any other available Gemini model
+        return model
+    except Exception as e:
+        print(f"Error initializing Gemini model: {e}")
+        raise
 
 # Check if the response is sufficient (can be customized)
 def is_sufficient_response(response):
@@ -28,10 +36,10 @@ def refine_query(previous_response):
 # Function to perform dynamic multi-hop retrieval with retries
 def dynamic_query_agent(query, model, max_hops=10):
     """
-    Performs dynamic multi-hop query generation and retrieval.
+    Performs dynamic multi-hop query generation and retrieval using Gemini.
     Arguments:
     query -- The original query to answer.
-    model -- The language model for generating the next article title.
+    model -- The language model for generating the next article title (Gemini).
     max_hops -- The maximum number of hops (retrieval steps) to perform.
 
     Returns:
@@ -49,7 +57,11 @@ def dynamic_query_agent(query, model, max_hops=10):
 
         # Use the prompt template to generate the next Wikipedia article title
         prompt = prompt_template.format(previous_response=responses[-1] if responses else "", original_query=query)
-        next_article_title = model.run(prompt)  # Generate the next article title
+
+        # Use the Gemini model to generate the next article title
+        response = model.generate_content(f"Generate the most relevant Wikipedia article title for the following query: {current_query}")
+        next_article_title = response.text.strip()
+
         print(f"Generated next article title: {next_article_title}")
 
         # Query Wikipedia for the next article

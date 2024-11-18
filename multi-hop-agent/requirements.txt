@@ -4,3 +4,11 @@ langchain-community
 requests
 anthropic
 transformers
+google-cloud-aiplatform
+google-auth
+google-cloud-core
+google-api-python-client
+torch
+huggingface-hub
+google-generativeai
+dotenv
