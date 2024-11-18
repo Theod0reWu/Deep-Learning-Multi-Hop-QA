@@ -1,9 +1,10 @@
 import time
 from tools.wiki_tool import get_wikipedia_article
-from prompts.prompt_templates import prompt_template
+from prompts.prompt_templates import prompt_template  # Import the prompt template
 from dotenv import load_dotenv
 import os
 import google.generativeai as genai
+import re
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -14,7 +15,6 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 # Function to initialize the Gemini model
 def select_model(model_name="Gemini"):
     try:
-        # Since the API key is configured globally, we don't need to reconfigure it here.
         model = genai.GenerativeModel("gemini-1.5-flash")  # You can replace with any other available Gemini model
         return model
     except Exception as e:
@@ -22,30 +22,51 @@ def select_model(model_name="Gemini"):
         raise
 
 # Check if the response is sufficient (can be customized)
-def is_sufficient_response(response):
-    """Checks if the response contains enough information."""
-    return "answer" in response or len(response.split()) > 50  # Example condition
+def is_sufficient_response(response, query):
+    """
+    Generalized function to check if the response from a Wikipedia article contains
+    enough information to answer the query.
+    """
+    # Check if response is longer than a minimal threshold
+    if len(response.split()) < 50:
+        return False
 
-# Function to refine the query based on the previous response
-def refine_query(previous_response):
-    """Refines the query based on the previous response."""
-    if "scientist" in previous_response:
-        return "More details on famous scientists"
-    return "Retrieve additional relevant information"
+    # If the query is about the person's details, such as birthplace, achievements, or life events
+    if "born" in query.lower() or "birthplace" in query.lower():
+        if "born" in response.lower() or "birthplace" in response.lower():
+            return True
 
-# Function to perform dynamic multi-hop retrieval with retries
+    # Check if the query involves an event (e.g., "happened", "event")
+    if "event" in query.lower() or "happened" in query.lower():
+        if "happened" in response.lower() or "event" in response.lower():
+            return True
+
+    return False
+
+
+
+
+# Generalize the query refinement based on article context
+def refine_query(previous_response, original_query):
+    """Generalized refinement to generate the next query based on the previous article content."""
+    # If the article mentions a name, it might be useful to look deeper into their achievements or life events
+    if "born" in previous_response.lower():
+        return "Find more details about this person's achievements or professional work."
+
+    # If the article contains references to places, further exploration of that location could be useful
+    if "location" in previous_response.lower():
+        return "What significant events happened in this location?"
+
+    # If there are mentions of dates, refine the query to explore specific periods in the person’s life
+    if "date" in previous_response.lower():
+        return "What important events happened around this time?"
+
+    # If the article does not provide the expected answer, continue exploring
+    return original_query
+
+
+# Function to perform dynamic multi-hop query generation and retrieval with retries
 def dynamic_query_agent(query, model, max_hops=10):
-    """
-    Performs dynamic multi-hop query generation and retrieval using Gemini.
-    Arguments:
-    query -- The original query to answer.
-    model -- The language model for generating the next article title (Gemini).
-    max_hops -- The maximum number of hops (retrieval steps) to perform.
-
-    Returns:
-    responses -- List of responses at each hop.
-    articles_used -- List of Wikipedia articles used during the retrieval.
-    """
     queries = [query]  # Initialize with the original query
     responses = []
     retries = 0
@@ -55,38 +76,36 @@ def dynamic_query_agent(query, model, max_hops=10):
     for hop in range(max_hops):
         current_query = queries[-1]  # The most recent query
 
-        # Use the prompt template to generate the next Wikipedia article title
+        # Use the template to generate the next Wikipedia article title
         prompt = prompt_template.format(previous_response=responses[-1] if responses else "", original_query=query)
-
-        # Use the Gemini model to generate the next article title
-        response = model.generate_content(f"Generate the most relevant Wikipedia article title for the following query: {current_query}")
+        response = model.generate_content(prompt)  # Get next article title from the model
         next_article_title = response.text.strip()
 
         print(f"Generated next article title: {next_article_title}")
 
         # Query Wikipedia for the next article
-        response = get_wikipedia_article(next_article_title)
-        responses.append(response)
+        wiki_response = get_wikipedia_article(next_article_title)
+        responses.append(wiki_response)
 
         # Track the Wikipedia article used in the retrieval
-        if response:  # Ensure a valid response
+        if wiki_response:  # Ensure a valid response
             article_link = f"https://en.wikipedia.org/wiki/{next_article_title.replace(' ', '_')}"
             articles_used.append(article_link)
             print(f"Article link: {article_link}")
 
         # Check if the response is sufficient to stop the process
-        if is_sufficient_response(response):
+        if is_sufficient_response(wiki_response, query):
             break
 
-        # Retry logic - refine query if needed (based on the previous response)
-        if retries < 3:  # Limit retries to 3
+        # Retry logic - refine query if needed
+        if retries < 3:
             retries += 1
-            refined_query = refine_query(response)
+            refined_query = refine_query(wiki_response, query)
             queries.append(refined_query)
-            print(f"Retry {retries}: Refined query - {refined_query}")
-            time.sleep(2)  # Wait to avoid overwhelming the API
+            print(f"Retry {retries}: Refining query.")
+            time.sleep(2)  # Avoid overwhelming the API
         else:
-            print(f"Max retries reached, stopping.")
+            print("Max retries reached, stopping.")
             break
 
     return responses, articles_used

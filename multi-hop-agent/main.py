@@ -2,7 +2,7 @@ from agents.agent import dynamic_query_agent, select_model
 
 def main():
     # Example initial query
-    query = "Abraham Lincoln's mother was who?"
+    query = "Was the person who served as president of the Scottish National Party from 1987 to 2005 alive when the party was founded?"
     model_name = "Gemini"  # Dynamically set which model to use: Claude, GPT, Gemini, Llama
 
     # Select the model dynamically
