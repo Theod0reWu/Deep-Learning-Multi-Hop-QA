@@ -1,14 +1,13 @@
 import sys
 import os
+import pandas as pd
 
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(
-    os.path.join(os.path.dirname(__file__), "../Deep-Learning-Multi-Hop-QA")
-)
+# Add the project root to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.dataset import get_frames_dataset  # adjust import path as needed
-from llm_interface import GeminiInterface
-from evaluator import Evaluator
+from src.dataset import get_frames_dataset
+from .llm_interface import GeminiInterface
+from .evaluator import Evaluator
 from sklearn.model_selection import train_test_split
 import json
 
@@ -30,6 +29,10 @@ def main():
 
     # Split dataset (optional, remove if not needed)
     train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
+
+    # Ensure we have DataFrames
+    train_df = pd.DataFrame(train_df)
+    test_df = pd.DataFrame(test_df)
 
     # Initialize model
     model = GeminiInterface(api_key=api_key)
