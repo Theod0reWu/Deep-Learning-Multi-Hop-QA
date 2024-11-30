@@ -18,10 +18,10 @@ class Evaluator:
             Dictionary containing overall metrics and metrics by reasoning type
         """
         # Generate predictions
-        predictions = self.model.batch_generate(test_df['prompt'].tolist())
+        predictions = self.model.batch_generate(test_df['Prompt'].tolist())
         
         # Calculate overall metrics
-        overall_metrics = self._calculate_metrics(predictions, test_df['answer'].tolist())
+        overall_metrics = self._calculate_metrics(predictions, test_df['Answer'].tolist())
         
         # Calculate metrics by reasoning type
         type_metrics = self._evaluate_by_reasoning_type(test_df, predictions)
@@ -56,7 +56,7 @@ class Evaluator:
         for reasoning_type in df['reasoning_types'].unique():
             mask = df['reasoning_types'] == reasoning_type
             type_preds = [p for p, m in zip(predictions, mask) if m]
-            type_truth = df[mask]['answer'].tolist()
+            type_truth = df[mask]['Answer'].tolist()
             
             if type_preds:
                 metrics_by_type[reasoning_type] = self._calculate_metrics(type_preds, type_truth)

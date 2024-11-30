@@ -6,8 +6,8 @@ import pandas as pd
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.dataset import get_frames_dataset
-from .llm_interface import GeminiInterface
-from .evaluator import Evaluator
+from llm_interface import GeminiInterface
+from evaluator import Evaluator
 from sklearn.model_selection import train_test_split
 import json
 
@@ -34,12 +34,15 @@ def main():
     train_df = pd.DataFrame(train_df)
     test_df = pd.DataFrame(test_df)
 
+    print("Initializaing model...")
     # Initialize model
     model = GeminiInterface(api_key=api_key)
 
+    print("Initializaing evaluator...")
     # Initialize evaluator
     evaluator = Evaluator(model)
 
+    print("Running Evaluation...")
     # Run evaluation
     results = evaluator.evaluate(test_df)
 

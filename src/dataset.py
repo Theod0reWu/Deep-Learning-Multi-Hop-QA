@@ -12,8 +12,8 @@ def extract_keywords(links):
 def get_frames_dataset():
     df = pd.read_csv("hf://datasets/google/frames-benchmark/test.tsv", sep="\t")
 
-    # Keep only the 'Prompt' and 'wiki_links' columns
-    df_filtered = df.loc[:, ["Prompt", "reasoning_types", "wiki_links"]]
+    # Keep only the 'Prompt', Answer and 'wiki_links' columns
+    df_filtered = df.loc[:, ["Prompt", "Answer", "reasoning_types", "wiki_links"]]
     # keep track of the number of wiki links as ground truth
     df_filtered["query_count"] = df_filtered["wiki_links"].str.count(",") + 1
 
@@ -42,3 +42,6 @@ def get_frames_filtereddataset():
     print(f"Prompt column type: {df_filtered['Prompt'].dtype}")
     
     return df_filtered
+
+if __name__ == '__main__':
+    get_frames_dataset()
