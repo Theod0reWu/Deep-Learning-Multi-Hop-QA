@@ -5,9 +5,6 @@ Overall GEMINI Metrics (using sentence-transformer for embedding similarity):
 --------------
 {
   "accuracy": 0.14545454545454545,
-  "precision": 1.0,
-  "recall": 0.14545454545454545,
-  "f1": 0.25396825396825395,
   "mean_similarity": 0.4107850545170632
 }
 
@@ -16,191 +13,110 @@ Metrics by Reasoning Type:
 {
   "Multiple constraints": {
     "accuracy": 0.18181818181818182,
-    "precision": 1.0,
-    "recall": 0.18181818181818182,
-    "f1": 0.3076923076923077,
     "mean_similarity": 0.407002842053771
   },
   "Multiple constraints | Post processing": {
     "accuracy": 0.5,
-    "precision": 1.0,
-    "recall": 0.5,
-    "f1": 0.6666666666666666,
     "mean_similarity": 0.5645301789045334
   },
   "Tabular reasoning | Multiple constraints | Temporal reasoning": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.2814628198742867
   },
   "Numerical reasoning": {
     "accuracy": 0.1875,
-    "precision": 1.0,
-    "recall": 0.1875,
-    "f1": 0.3157894736842105,
     "mean_similarity": 0.4795944532379508
   },
   "Temporal reasoning": {
     "accuracy": 0.2727272727272727,
-    "precision": 1.0,
-    "recall": 0.2727272727272727,
-    "f1": 0.42857142857142855,
     "mean_similarity": 0.5419602421197024
   },
   "Multiple constraints | Temporal reasoning": {
     "accuracy": 0.18181818181818182,
-    "precision": 1.0,
-    "recall": 0.18181818181818182,
-    "f1": 0.3076923076923077,
     "mean_similarity": 0.45142073184251785
   },
   "Tabular reasoning": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.436211606820247
   },
   "Numerical reasoning | Tabular reasoning": {
     "accuracy": 0.16666666666666666,
-    "precision": 1.0,
-    "recall": 0.16666666666666666,
-    "f1": 0.2857142857142857,
     "mean_similarity": 0.28703979030251503
   },
   "Numerical reasoning | Multiple constraints | Post processing": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.06447925185784698
   },
   "Tabular reasoning | Temporal reasoning": {
     "accuracy": 0.125,
-    "precision": 1.0,
-    "recall": 0.125,
-    "f1": 0.2222222222222222,
     "mean_similarity": 0.4579821787774563
   },
   "Tabular reasoning | Multiple constraints": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.3178498722198937
   },
   "Post processing": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.3095419183373451
   },
   "Numerical reasoning | Multiple constraints | Post processing | Temporal reasoning": {
     "accuracy": 1.0,
-    "precision": 1.0,
-    "recall": 1.0,
-    "f1": 1.0,
     "mean_similarity": 0.9786664247512817
   },
   "Numerical reasoning | Tabular reasoning | Multiple constraints | Temporal reasoning": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.38276732340455055
   },
   "Numerical reasoning | Multiple constraints | Temporal reasoning": {
     "accuracy": 0.08333333333333333,
-    "precision": 1.0,
-    "recall": 0.08333333333333333,
-    "f1": 0.15384615384615385,
     "mean_similarity": 0.34394253728290397
   },
   "Numerical reasoning | Temporal reasoning": {
     "accuracy": 0.3333333333333333,
-    "precision": 1.0,
-    "recall": 0.3333333333333333,
-    "f1": 0.5,
     "mean_similarity": 0.41041962802410126
   },
   "Numerical reasoning | Multiple constraints": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.2687061820179224
   },
   "Multiple constraints | Post processing | Temporal reasoning": {
     "accuracy": 0.5,
-    "precision": 1.0,
-    "recall": 0.5,
-    "f1": 0.6666666666666666,
     "mean_similarity": 0.7364290803670883
   },
   "Numerical reasoning | Tabular reasoning | Multiple constraints | Post processing | Temporal reasoning": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.6115806102752686
   },
   "Numerical reasoning | Tabular reasoning | Post processing | Temporal reasoning": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.29749220609664917
   },
   "Numerical reasoning | Tabular reasoning | Multiple constraints": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.2909864455461502
   },
   "Numerical reasoning | Tabular reasoning | Post processing": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.37534815818071365
   },
   "Tabular reasoning | Multiple constraints | Post processing": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.735140860080719
   },
   "Post processing | Temporal reasoning": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.15574588056188077
   },
   "Numerical reasoning | Tabular reasoning | Temporal reasoning": {
     "accuracy": 0.5,
-    "precision": 1.0,
-    "recall": 0.5,
-    "f1": 0.6666666666666666,
     "mean_similarity": 0.7319997549057007
   },
   "Numerical reasoning | Post processing | Temporal reasoning": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.06145630404353142
   },
   "Numerical reasoning | Post processing": {
     "accuracy": 0.0,
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0,
     "mean_similarity": 0.24041278660297394
   }
 }
