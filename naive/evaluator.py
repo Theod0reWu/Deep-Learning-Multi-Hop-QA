@@ -1,11 +1,17 @@
 from typing import Dict, List
 import pandas as pd
+import numpy as np
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sentence_transformers import SentenceTransformer
 from llm_interface import LLMInterface
 
 class Evaluator:
     def __init__(self, model: LLMInterface):
         self.model = model
+        # Initialize the sentence transformer model
+        self.sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+        # Similarity threshold for considering answers as matching
+        self.similarity_threshold = 0.8
 
     def evaluate(self, test_df: pd.DataFrame) -> Dict:
         """
@@ -32,24 +38,33 @@ class Evaluator:
         }
 
     def _calculate_metrics(self, predictions: List[str], ground_truth: List[str]) -> Dict[str, float]:
-        """Calculate evaluation metrics"""
-        # Convert string predictions to binary (correct/incorrect)
-        binary_preds = [pred.strip().lower() == truth.strip().lower() 
-                       for pred, truth in zip(predictions, ground_truth)]
-        binary_truth = [1] * len(ground_truth)
+        """Calculate evaluation metrics using embedding similarity"""
+        # Get embeddings for predictions and ground truth
+        pred_embeddings = self.sentence_model.encode(predictions)
+        truth_embeddings = self.sentence_model.encode(ground_truth)
         
-        return {
+        # Calculate cosine similarity between predictions and ground truth
+        similarities = np.zeros(len(predictions))
+        for i, (pred_emb, truth_emb) in enumerate(zip(pred_embeddings, truth_embeddings)):
+            similarity = np.dot(pred_emb, truth_emb) / (np.linalg.norm(pred_emb) * np.linalg.norm(truth_emb))
+            similarities[i] = similarity
+        
+        # Convert similarities to binary predictions based on threshold
+        binary_preds = similarities >= self.similarity_threshold
+        binary_truth = np.ones(len(ground_truth), dtype=bool)
+        
+        # Calculate metrics
+        metrics = {
             'accuracy': accuracy_score(binary_truth, binary_preds),
             'precision': precision_score(binary_truth, binary_preds),
             'recall': recall_score(binary_truth, binary_preds),
-            'f1': f1_score(binary_truth, binary_preds)
+            'f1': f1_score(binary_truth, binary_preds),
+            'mean_similarity': np.mean(similarities)
         }
+        
+        return metrics
 
-    def _evaluate_by_reasoning_type(
-        self,
-        df: pd.DataFrame,
-        predictions: List[str]
-    ) -> Dict[str, Dict[str, float]]:
+    def _evaluate_by_reasoning_type(self, df: pd.DataFrame, predictions: List[str]) -> Dict[str, Dict[str, float]]:
         """Calculate metrics broken down by reasoning type"""
         metrics_by_type = {}
         
