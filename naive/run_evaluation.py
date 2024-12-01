@@ -1,15 +1,16 @@
 import sys
 import os
 import pandas as pd
+import datetime
+import json
 
 # Add the project root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.dataset import get_frames_dataset
-from .llm_interface import GeminiInterface
-from .evaluator import Evaluator
+from llm_interface import GeminiInterface
+from evaluator import Evaluator
 from sklearn.model_selection import train_test_split
-import json
 
 
 def main():
@@ -23,7 +24,7 @@ def main():
     df = get_frames_dataset()
 
     # Ensure we have the required columns
-    required_cols = ["Prompt", "reasoning_types"]
+    required_cols = ["Prompt", "Answer", "reasoning_types"]
     if not all(col in df.columns for col in required_cols):
         raise ValueError(f"Dataset missing required columns: {required_cols}")
 
@@ -43,7 +44,30 @@ def main():
     # Run evaluation
     results = evaluator.evaluate(test_df)
 
-    # Print results
+    # Create results directory if it doesn't exist
+    results_dir = os.path.join(os.path.dirname(__file__), "results")
+    os.makedirs(results_dir, exist_ok=True)
+
+    # Save results to file
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    results_file = os.path.join(results_dir, f"evaluation_results_{timestamp}.txt")
+
+    with open(results_file, "w") as f:
+        f.write("Evaluation Results\n")
+        f.write("=================\n\n")
+
+        f.write("Overall Metrics:\n")
+        f.write("--------------\n")
+        f.write(json.dumps(results["overall"], indent=2))
+        f.write("\n\n")
+
+        f.write("Metrics by Reasoning Type:\n")
+        f.write("------------------------\n")
+        f.write(json.dumps(results["by_type"], indent=2))
+
+    print(f"\nResults saved to: {results_file}")
+
+    # Print results to console as well
     print("\nOverall Metrics:")
     print(json.dumps(results["overall"], indent=2))
 

@@ -1,0 +1,178 @@
+Evaluation Results
+=================
+
+Overall Metrics:
+--------------
+{
+  "accuracy": 0.048484848484848485,
+  "precision": 1.0,
+  "recall": 0.048484848484848485,
+  "f1": 0.09248554913294797
+}
+
+Metrics by Reasoning Type:
+------------------------
+{
+  "Multiple constraints": {
+    "accuracy": 0.06818181818181818,
+    "precision": 1.0,
+    "recall": 0.06818181818181818,
+    "f1": 0.1276595744680851
+  },
+  "Multiple constraints | Post processing": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Tabular reasoning | Multiple constraints | Temporal reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Temporal reasoning": {
+    "accuracy": 0.18181818181818182,
+    "precision": 1.0,
+    "recall": 0.18181818181818182,
+    "f1": 0.3076923076923077
+  },
+  "Multiple constraints | Temporal reasoning": {
+    "accuracy": 0.09090909090909091,
+    "precision": 1.0,
+    "recall": 0.09090909090909091,
+    "f1": 0.16666666666666666
+  },
+  "Tabular reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Tabular reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Multiple constraints | Post processing": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Tabular reasoning | Temporal reasoning": {
+    "accuracy": 0.125,
+    "precision": 1.0,
+    "recall": 0.125,
+    "f1": 0.2222222222222222
+  },
+  "Tabular reasoning | Multiple constraints": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Post processing": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Multiple constraints | Post processing | Temporal reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Tabular reasoning | Multiple constraints | Temporal reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Multiple constraints | Temporal reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Temporal reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Multiple constraints": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Multiple constraints | Post processing | Temporal reasoning": {
+    "accuracy": 0.5,
+    "precision": 1.0,
+    "recall": 0.5,
+    "f1": 0.6666666666666666
+  },
+  "Numerical reasoning | Tabular reasoning | Multiple constraints | Post processing | Temporal reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Tabular reasoning | Post processing | Temporal reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Tabular reasoning | Multiple constraints": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Tabular reasoning | Post processing": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Tabular reasoning | Multiple constraints | Post processing": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Post processing | Temporal reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Tabular reasoning | Temporal reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Post processing | Temporal reasoning": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "Numerical reasoning | Post processing": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  }
+}
