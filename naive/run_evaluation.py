@@ -3,76 +3,78 @@ import os
 import pandas as pd
 import datetime
 import json
+import argparse
 
 # Add the project root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.dataset import get_frames_dataset
-from llm_interface import GeminiInterface
+from llm_interface import GeminiInterface, ChatGPTInterface
 from evaluator import Evaluator
-from sklearn.model_selection import train_test_split
+
+
+def get_model(model_name: str):
+    """Initialize and return the specified model"""
+    if model_name == "gemini":
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("Please set GEMINI_API_KEY environment variable")
+        return GeminiInterface(api_key), "Gemini"
+    elif model_name == "gpt":
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("Please set OPENAI_API_KEY environment variable")
+        return ChatGPTInterface(api_key), "ChatGPT"
+    else:
+        raise ValueError("Invalid model name. Choose 'gemini' or 'gpt'")
 
 
 def main():
-    # Load API key (you should set this in your environment)
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise ValueError("Please set GEMINI_API_KEY environment variable")
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description="Run evaluation with specified LLM")
+    parser.add_argument(
+        "model",
+        type=str,
+        choices=["gemini", "gpt"],
+        help="Which model to use (gemini or gpt)",
+    )
+    args = parser.parse_args()
 
-    # Load dataset
-    print("Loading dataset...")
-    df = get_frames_dataset()
+    # Initialize the specified model
+    model, model_name = get_model(args.model)
 
-    # Ensure we have the required columns
-    required_cols = ["Prompt", "Answer", "reasoning_types"]
-    if not all(col in df.columns for col in required_cols):
-        raise ValueError(f"Dataset missing required columns: {required_cols}")
-
-    # Split dataset (optional, remove if not needed)
-    train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
-
-    # Ensure we have DataFrames
-    train_df = pd.DataFrame(train_df)
-    test_df = pd.DataFrame(test_df)
-
-    # Initialize model
-    model = GeminiInterface(api_key=api_key)
-
-    # Initialize evaluator
-    evaluator = Evaluator(model)
-
-    # Run evaluation
-    results = evaluator.evaluate(test_df)
+    # Load test dataset
+    test_df = get_frames_dataset()
 
     # Create results directory if it doesn't exist
     results_dir = os.path.join(os.path.dirname(__file__), "results")
     os.makedirs(results_dir, exist_ok=True)
 
-    # Save results to file
+    # Get current timestamp for the results file
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    results_file = os.path.join(results_dir, f"evaluation_results_{timestamp}.txt")
+    results_file = os.path.join(
+        results_dir, f"evaluation_results_{model_name}_{timestamp}.txt"
+    )
 
+    # Evaluate model
+    evaluator = Evaluator(model, model_name)
+    results = evaluator.evaluate(test_df)
+
+    # Save results
     with open(results_file, "w") as f:
-        f.write("Evaluation Results\n")
-        f.write("=================\n\n")
+        f.write(f"=== {model_name} Evaluation Results ===\n\n")
 
         f.write("Overall Metrics:\n")
-        f.write("--------------\n")
-        f.write(json.dumps(results["overall"], indent=2))
-        f.write("\n\n")
+        for metric, value in results["overall"].items():
+            f.write(f"{metric}: {value:.4f}\n")
 
-        f.write("Metrics by Reasoning Type:\n")
-        f.write("------------------------\n")
-        f.write(json.dumps(results["by_type"], indent=2))
+        f.write("\nMetrics by Reasoning Type:\n")
+        for rtype, metrics in results["by_type"].items():
+            f.write(f"\n{rtype}:\n")
+            for metric, value in metrics.items():
+                f.write(f"  {metric}: {value:.4f}\n")
 
     print(f"\nResults saved to: {results_file}")
-
-    # Print results to console as well
-    print("\nOverall Metrics:")
-    print(json.dumps(results["overall"], indent=2))
-
-    print("\nMetrics by Reasoning Type:")
-    print(json.dumps(results["by_type"], indent=2))
 
 
 if __name__ == "__main__":

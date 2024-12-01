@@ -6,8 +6,9 @@ from sentence_transformers import SentenceTransformer
 from llm_interface import LLMInterface
 
 class Evaluator:
-    def __init__(self, model: LLMInterface):
+    def __init__(self, model: LLMInterface, model_name: str = "unknown"):
         self.model = model
+        self.model_name = model_name
         # Initialize the sentence transformer model
         self.sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
         # Similarity threshold for considering answers as matching
@@ -23,6 +24,7 @@ class Evaluator:
         Returns:
             Dictionary containing overall metrics and metrics by reasoning type
         """
+        print(f"\nEvaluating {self.model_name}...")
         # Generate predictions
         predictions = self.model.batch_generate(test_df['Prompt'].tolist())
         
@@ -33,6 +35,7 @@ class Evaluator:
         type_metrics = self._evaluate_by_reasoning_type(test_df, predictions)
         
         return {
+            'model': self.model_name,
             'overall': overall_metrics,
             'by_type': type_metrics
         }

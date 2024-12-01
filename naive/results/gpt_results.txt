@@ -1,0 +1,220 @@
+=== ChatGPT Evaluation Results ===
+
+Overall Metrics:
+accuracy: 0.0534
+precision: 1.0000
+recall: 0.0534
+f1: 0.1014
+mean_similarity: 0.3259
+
+Metrics by Reasoning Type:
+
+Multiple constraints:
+  accuracy: 0.0642
+  precision: 1.0000
+  recall: 0.0642
+  f1: 0.1206
+  mean_similarity: 0.3700
+
+Numerical reasoning | Tabular reasoning | Multiple constraints:
+  accuracy: 0.0417
+  precision: 1.0000
+  recall: 0.0417
+  f1: 0.0800
+  mean_similarity: 0.2455
+
+Numerical reasoning | Multiple constraints | Temporal reasoning:
+  accuracy: 0.0256
+  precision: 1.0000
+  recall: 0.0256
+  f1: 0.0500
+  mean_similarity: 0.2542
+
+Tabular reasoning | Multiple constraints | Temporal reasoning:
+  accuracy: 0.0952
+  precision: 1.0000
+  recall: 0.0952
+  f1: 0.1739
+  mean_similarity: 0.3726
+
+Multiple constraints | Temporal reasoning:
+  accuracy: 0.1136
+  precision: 1.0000
+  recall: 0.1136
+  f1: 0.2041
+  mean_similarity: 0.3132
+
+Temporal reasoning:
+  accuracy: 0.0800
+  precision: 1.0000
+  recall: 0.0800
+  f1: 0.1481
+  mean_similarity: 0.3592
+
+Tabular reasoning | Multiple constraints:
+  accuracy: 0.0200
+  precision: 1.0000
+  recall: 0.0200
+  f1: 0.0392
+  mean_similarity: 0.3449
+
+Numerical reasoning | Tabular reasoning | Post processing | Temporal reasoning:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.1006
+
+Numerical reasoning | Tabular reasoning | Multiple constraints | Temporal reasoning:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.3412
+
+Tabular reasoning | Temporal reasoning:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.3214
+
+Numerical reasoning | Tabular reasoning:
+  accuracy: 0.0870
+  precision: 1.0000
+  recall: 0.0870
+  f1: 0.1600
+  mean_similarity: 0.2981
+
+Numerical reasoning:
+  accuracy: 0.0862
+  precision: 1.0000
+  recall: 0.0862
+  f1: 0.1587
+  mean_similarity: 0.3258
+
+Numerical reasoning | Post processing:
+  accuracy: 0.0667
+  precision: 1.0000
+  recall: 0.0667
+  f1: 0.1250
+  mean_similarity: 0.2020
+
+Numerical reasoning | Multiple constraints | Post processing:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.3212
+
+Numerical reasoning | Tabular reasoning | Temporal reasoning:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.1890
+
+Numerical reasoning | Multiple constraints:
+  accuracy: 0.0357
+  precision: 1.0000
+  recall: 0.0357
+  f1: 0.0690
+  mean_similarity: 0.2956
+
+Post processing:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.2869
+
+Tabular reasoning:
+  accuracy: 0.0244
+  precision: 1.0000
+  recall: 0.0244
+  f1: 0.0476
+  mean_similarity: 0.3861
+
+Tabular reasoning | Multiple constraints | Post processing:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.2250
+
+Numerical reasoning | Multiple constraints | Post processing | Temporal reasoning:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.1615
+
+Post processing | Temporal reasoning:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.3021
+
+Numerical reasoning | Tabular reasoning | Post processing:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.1927
+
+Numerical reasoning | Tabular reasoning | Multiple constraints | Post processing:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.1163
+
+Numerical reasoning | Temporal reasoning:
+  accuracy: 0.0667
+  precision: 1.0000
+  recall: 0.0667
+  f1: 0.1250
+  mean_similarity: 0.2891
+
+Multiple constraints | Post processing | Temporal reasoning:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.4174
+
+Numerical reasoning | Tabular reasoning | Multiple constraints | Post processing | Temporal reasoning:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.2429
+
+Multiple constraints | Post processing:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.2565
+
+Numerical reasoning | Post processing | Temporal reasoning:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.1961
+
+Tabular reasoning | Post processing:
+  accuracy: 0.3333
+  precision: 1.0000
+  recall: 0.3333
+  f1: 0.5000
+  mean_similarity: 0.5084
+
+Tabular reasoning | Multiple constraints | Post processing | Temporal reasoning:
+  accuracy: 0.0000
+  precision: 0.0000
+  recall: 0.0000
+  f1: 0.0000
+  mean_similarity: 0.2647
