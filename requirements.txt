@@ -1,56 +1,29 @@
-aiohappyeyeballs==2.4.3
-aiohttp==3.11.1
-aiosignal==1.3.1
-attrs==24.2.0
-certifi==2024.8.30
-charset-normalizer==3.4.0
-colorama==0.4.6
-datasets==3.1.0
-dill==0.3.8
-filelock==3.16.1
-frozenlist==1.5.0
-fsspec==2024.9.0
-huggingface-hub==0.26.2
-idna==3.10
-matplotlib==3.8.3
-multidict==6.1.0
-multiprocess==0.70.16
-numpy>=1.26.0
-packaging==24.2
-pandas==2.2.3
-propcache==0.2.0
-pyarrow==18.0.0
-python-dateutil==2.9.0.post0
-pytz==2024.2
-PyYAML==6.0.2
-requests==2.32.3
-seaborn==0.13.2
-six==1.16.0
-tqdm==4.67.0
-typing_extensions==4.12.2
-tzdata==2024.2
-urllib3==2.2.3
-xxhash==3.5.0
-yarl==1.17.1
-## multi-hop-agent
+# Core dependencies
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+
+# Deep Learning & NLP
+sentence-transformers>=2.2.2
+nltk>=3.8.1
+rank-bm25>=0.2.2
+
+# API Interfaces
+google-generativeai>=0.3.0
+wikipedia-api>=0.6.0
+python-dotenv>=1.0.0
+
+# Utilities
+requests>=2.31.0
+
+# Additional dependencies for multi-hop-agent
 openai
 langchain
 langchain-community
-requests
 anthropic
 transformers
 google-cloud-aiplatform
 google-auth
 google-cloud-core
-google-api-python-client
-torch
-numpy
-scikit-learn
-pandas
 huggingface-hub
-google-generativeai
-python-dotenv
-nltk==3.8.1
-rank-bm25==0.2.2
-wikipedia-api==0.6.0
-requests>=2.31.0
+torch
