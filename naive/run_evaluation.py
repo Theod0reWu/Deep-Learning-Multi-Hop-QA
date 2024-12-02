@@ -50,8 +50,8 @@ def main():
     print("\nOverall Metrics:")
     print(json.dumps(results["overall"], indent=2))
 
-    print("\nMetrics by Reasoning Type:")
-    print(json.dumps(results["by_type"], indent=2))
+    # print("\nMetrics by Reasoning Type:")
+    # print(json.dumps(results["by_type"], indent=2))
 
 
 if __name__ == "__main__":
