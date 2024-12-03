@@ -80,16 +80,41 @@ class Evaluator:
         self, df: pd.DataFrame, predictions: List[str]
     ) -> Dict[str, Dict[str, float]]:
         """Calculate metrics broken down by reasoning type"""
-        metrics_by_type = {}
+        metrics_by_type = {
+            "combined": {},  # For exact type combinations
+            "individual": {}  # For individual type statistics
+        }
 
+        # First handle combined types (exact matches)
         for reasoning_type in df["reasoning_types"].unique():
             mask = df["reasoning_types"] == reasoning_type
             type_preds = [p for p, m in zip(predictions, mask) if m]
             type_truth = df[mask]["Answer"].tolist()
 
             if type_preds:
-                metrics_by_type[reasoning_type] = self._calculate_metrics(
+                metrics_by_type["combined"][reasoning_type] = self._calculate_metrics(
                     type_preds, type_truth
                 )
+
+        # Now handle individual types
+        for idx, row in df.iterrows():
+            # Split the combined types into individual ones
+            individual_types = [t.strip() for t in row["reasoning_types"].split(",")]
+            
+            for type_name in individual_types:
+                if type_name not in metrics_by_type["individual"]:
+                    metrics_by_type["individual"][type_name] = {
+                        "predictions": [],
+                        "ground_truth": []
+                    }
+                
+                metrics_by_type["individual"][type_name]["predictions"].append(predictions[idx])
+                metrics_by_type["individual"][type_name]["ground_truth"].append(row["Answer"])
+
+        # Calculate metrics for individual types
+        for type_name, data in metrics_by_type["individual"].items():
+            metrics_by_type["individual"][type_name] = self._calculate_metrics(
+                data["predictions"], data["ground_truth"]
+            )
 
         return metrics_by_type

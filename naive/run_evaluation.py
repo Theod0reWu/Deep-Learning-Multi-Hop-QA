@@ -66,13 +66,19 @@ def main():
 
         f.write("Overall Metrics:\n")
         for metric, value in results["overall"].items():
-            f.write(f"{metric}: {value:.4f}\n")
+            if isinstance(value, (int, float)):
+                f.write(f"{metric}: {value:.4f}\n")
+            else:
+                f.write(f"{metric}: {value}\n")
 
         f.write("\nMetrics by Reasoning Type:\n")
         for rtype, metrics in results["by_type"].items():
             f.write(f"\n{rtype}:\n")
             for metric, value in metrics.items():
-                f.write(f"  {metric}: {value:.4f}\n")
+                if isinstance(value, (int, float)):
+                    f.write(f"  {metric}: {value:.4f}\n")
+                else:
+                    f.write(f"  {metric}: {value}\n")
 
     print(f"\nResults saved to: {results_file}")
 
