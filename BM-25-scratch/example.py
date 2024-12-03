@@ -3,22 +3,57 @@ import logging
 from bm25_scratch import BM25MultiHopRetriever
 
 # Define test questions with their settings
+# TEST_CASES = [
+#     {
+#         "question": "What was the relationship between Alan Turing and Christopher Morcom?",
+#         "target_docs": 3,
+#         "queries_per_iteration": 1,
+#         "docs_per_query": 2,
+#         "score_threshold": 0.8,
+#         "max_tokens": 10000
+#     },
+#     {
+#         "question": "How did Albert Einstein's influence work on special relativity",
+#         "target_docs": 6,
+#         "queries_per_iteration": 1,
+#         "docs_per_query": 3,
+#         "score_threshold": 0.5,
+#         "max_tokens": 25000
+#     },
+#     # Add more test cases here
+# ]
 TEST_CASES = [
     {
-        "question": "What was the relationship between Alan Turing and Christopher Morcom?",
+        "question": "During the year that Serbia became an independent republic after separation from Montenegro, who won the Nobel Prize for Literature?",
         "target_docs": 3,
         "queries_per_iteration": 1,
         "docs_per_query": 2,
-        "score_threshold": 0.5,
-        "max_tokens": 10000
+        "score_threshold": 0.8,
+        "max_tokens": 100000
     },
     {
-        "question": "How did Einstein's work on special relativity influence the development of quantum mechanics?",
-        "target_docs": 4,
+        "question": "What is the name of the river in the city where Ikea's headquarters are?",
+        "target_docs": 6,
         "queries_per_iteration": 1,
-        "docs_per_query": 2,
+        "docs_per_query": 3,
         "score_threshold": 0.5,
-        "max_tokens": 2000
+        "max_tokens": 100000
+    },
+    {
+        "question": "A disease that had millions of dollars raised for on April 20, 1992, was first recognized by the Center for Disease Control and Prevention (CDC) in what year?",
+        "target_docs": 3,
+        "queries_per_iteration": 1,
+        "docs_per_query": 3,
+        "score_threshold": 0.5,
+        "max_tokens": 100000
+    },
+    {
+        "question": " what is the difference between the population of Seattle, WA, and Portland, OR",
+        "target_docs": 3,
+        "queries_per_iteration": 1,
+        "docs_per_query": 3,
+        "score_threshold": 0.5,
+        "max_tokens": 100000
     },
     # Add more test cases here
 ]
@@ -39,7 +74,7 @@ def process_question(retriever, test_case, case_number):
 
     try:
         # Perform retrieval
-        answer, context_history, visited_pages, context_docs, processed_docs, generated_queries = retriever.retrieve(
+        answer, _, visited_pages, context_docs, processed_docs, generated_queries = retriever.retrieve(
             question=test_case['question'],
             num_iterations=test_case['target_docs'],
             queries_per_iteration=test_case['queries_per_iteration'],
@@ -63,7 +98,14 @@ def process_question(retriever, test_case, case_number):
             print(f"- {title}: {wiki_url}")
 
         print("\nFinal Answer:")
-        print(f"{answer}\n")
+        print(answer)
+
+        print("\nRaw Context (500 tokens per document):")
+        print("-" * 80)
+        for title, content in context_docs:
+            print(f"\n### Document: {title} ###")
+            print(content[:500] + "..." if len(content) > 500 else content)
+            print("-" * 80)
 
         print("\nContext Used:")
         for i, doc in enumerate(context_docs, 1):
@@ -80,6 +122,11 @@ def process_question(retriever, test_case, case_number):
         print(f"Cache misses: {retriever.cache_misses}")
         hit_rate = retriever.cache_hits / (retriever.cache_hits + retriever.cache_misses) * 100 if (retriever.cache_hits + retriever.cache_misses) > 0 else 0
         print(f"Cache hit rate: {hit_rate:.1f}%")
+
+        print(f"\nToken Usage:")
+        print(f"Total input tokens: {retriever.gemini_tokens_in}")
+        print(f"Total output tokens: {retriever.gemini_tokens_out}")
+        print(f"Total tokens: {retriever.gemini_tokens_in + retriever.gemini_tokens_out}")
 
     except Exception as e:
         print(f"Error processing question: {str(e)}")

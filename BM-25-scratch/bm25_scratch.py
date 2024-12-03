@@ -24,6 +24,17 @@ class BM25MultiHopRetriever:
         self.cache_hits = 0  # Track cache hits
         self.cache_misses = 0  # Track cache misses
         
+        # Context tracking
+        self.context_history = []  # Track context history
+        self.visited_pages = set()  # Track visited pages
+        self.context_docs = []  # Track documents in context
+        self.context_titles = set()  # Track titles in context
+        self.processed_docs = []  # Track all processed documents
+        
+        # Token tracking for Gemini API
+        self.gemini_tokens_in = 0
+        self.gemini_tokens_out = 0
+        
         # Initialize NLTK
         try:
             nltk.data.find('tokenizers/punkt')
@@ -165,48 +176,91 @@ class BM25MultiHopRetriever:
                 "HARM_CATEGORY_DANGEROUS_CONTENT": "BLOCK_NONE"
             }
             
-            # For first iteration, extract key terms from the original question
+            # For first iteration (iteration 0), generate initial subquestion
             if iteration == 0:
-                # Extract key entities and terms from the question
-                prompt = f"""Extract 3-5 key terms from this question that would make a good Wikipedia search query.
-Question: {question}
+                prompt = f"""Given this multi-step question: "{question}"
 
-Return only the search terms, no explanation:"""
+What would be the most relevant Wikipedia article title we need to look up first?
+
+Guidelines:
+1. Consider the main entities or subjects in the question
+2. Format your response as you would expect a Wikipedia article title
+3. Choose the most specific and relevant article that would contain the key information
+4. Use standard Wikipedia title capitalization
+
+Examples:
+Question: "What is the name of the river in the city where Ikea's headquarters are?"
+Response: IKEA
+
+Question: "Which US president was in office when the Panama Canal was completed?"
+Response: Panama Canal
+
+Question: "What was the GDP of the country where the 1992 Winter Olympics were held?"
+Response: 1992 Winter Olympics
+
+Your response should be just the article title, nothing else.
+
+Response:"""
+                
+                # Track input tokens
+                self.gemini_tokens_in += len(self.word_tokenize(prompt))
                 
                 response = self.model.generate_content(prompt, safety_settings=safety_settings)
-                return response.text.strip()
+                response_text = response.text.strip()
+                
+                # Track output tokens
+                self.gemini_tokens_out += len(self.word_tokenize(response_text))
+                
+                return response_text
             
             # For subsequent iterations, generate new queries based on context
-            prompt = f"""Given this context: {context}
-And this question: {question}
-Previous queries used: {', '.join(previous_queries)}
+            prompt = f"""Given this context and question, determine the next Wikipedia article we need to look up.
 
-Generate a NEW and DIFFERENT search query (3-5 words) to help answer the question.
-The query should:
-1. Be different from previous queries
-2. Include key terms from the question
-3. Be suitable for Wikipedia article titles
-4. Help answer aspects of the question not covered yet
+Original Question: "{question}"
 
-Query:"""
+Context So Far:
+{context}
+
+Previous Articles Queried: {', '.join(previous_queries)}
+
+Guidelines:
+1. Based on what we've learned from the context, what's the next key piece of information we need?
+2. Format your response as a Wikipedia article title that would contain this information
+3. Make sure this is DIFFERENT from previous queries: {', '.join(previous_queries)}
+4. Use standard Wikipedia title capitalization
+
+Examples of good article titles:
+- For population data: "Portland, Oregon" or "Seattle, Washington"
+- For company info: "Microsoft Corporation" or "Apple Inc."
+- For historical events: "American Civil War" or "World War II"
+
+Your response should be just the article title that would contain our next needed piece of information.
+
+Response:"""
+            
+            # Track input tokens
+            self.gemini_tokens_in += len(self.word_tokenize(prompt))
             
             response = self.model.generate_content(prompt, safety_settings=safety_settings)
             
             self.last_api_call = time.time()
             generated_query = response.text.strip()
             
-            # Ensure query is not too long
-            words = generated_query.split()
-            if len(words) > 5:
-                generated_query = ' '.join(words[:5])
+            # Track output tokens
+            self.gemini_tokens_out += len(self.word_tokenize(generated_query))
             
-            # If the generated query is too similar to previous queries, try again
+            # Ensure query is not too similar to previous queries
             if generated_query in previous_queries:
-                prompt += "\nIMPORTANT: The query MUST be completely different from: " + ', '.join(previous_queries)
+                prompt += "\n\nIMPORTANT: We've already looked up that article. We need a DIFFERENT Wikipedia article that would have the next piece of information we need. Previous articles: " + ', '.join(previous_queries)
+                
+                # Track additional input tokens
+                self.gemini_tokens_in += len(self.word_tokenize(prompt))
+                
                 response = self.model.generate_content(prompt, safety_settings=safety_settings)
                 generated_query = response.text.strip()
-                if len(words) > 5:
-                    generated_query = ' '.join(words[:5])
+                
+                # Track additional output tokens
+                self.gemini_tokens_out += len(self.word_tokenize(generated_query))
             
             return generated_query
             
@@ -240,6 +294,9 @@ Context:
 
 Answer:"""
         
+            # Track input tokens for final answer generation
+            self.gemini_tokens_in += len(self.word_tokenize(prompt))
+            
             try:
                 response = self.model.generate_content(prompt,
                     safety_settings={
@@ -250,12 +307,18 @@ Answer:"""
                     })
                 self.last_api_call = time.time()
             
+                answer = ""
                 if hasattr(response, 'text'):
-                    return response.text.strip()
+                    answer = response.text.strip()
                 elif hasattr(response, 'parts') and response.parts:
-                    return response.parts[0].text.strip()
+                    answer = response.parts[0].text.strip()
                 else:
-                    return "Unable to generate response due to content safety filters. Please try rephrasing the question."
+                    answer = "Unable to generate response due to content safety filters. Please try rephrasing the question."
+                
+                # Track output tokens for final answer
+                self.gemini_tokens_out += len(self.word_tokenize(answer))
+                
+                return answer
                 
             except Exception as e:
                 self.logger.error(f"Error in Gemini API call: {str(e)}")
@@ -366,6 +429,7 @@ Answer:"""
             
             self.logger.info(f"Retrieval complete. Collected {len(self.context_docs)} documents in {iteration} iterations")
             self.logger.info(f"Cache statistics - Hits: {self.cache_hits}, Misses: {self.cache_misses}, Hit rate: {self.cache_hits/(self.cache_hits + self.cache_misses):.2%}")
+            self.logger.info(f"Gemini API usage - Input tokens: {self.gemini_tokens_in}, Output tokens: {self.gemini_tokens_out}")
             
             # Generate final answer
             answer = self._generate_answer(question, self.context_history)
