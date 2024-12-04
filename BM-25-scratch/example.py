@@ -48,7 +48,7 @@ TEST_CASES = [
         "max_tokens": 100000
     },
     {
-        "question": " what is the difference between the population of Seattle, WA, and Portland, OR",
+        "question": "what is the difference between the population of Seattle, WA, and Portland, OR",
         "target_docs": 3,
         "queries_per_iteration": 1,
         "docs_per_query": 3,
