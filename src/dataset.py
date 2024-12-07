@@ -44,4 +44,6 @@ def get_frames_filtereddataset():
     return df_filtered
 
 if __name__ == '__main__':
-    get_frames_dataset()
+    df = get_frames_filtereddataset()
+    print(df.columns)
+    print(df.head(1).to_string(index=False))
