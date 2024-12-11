@@ -1,77 +1,84 @@
-import json
-import os
+def parse_text_metrics(content):
+    metrics = {}
+    current_type = None
+    overall_metrics = {}
 
-def parse_results_to_json(content):
-    results = {
-        "overall_metrics": {},
-        "combined": {},
-        "individual": {}
-    }
-    
-    current_section = None
-    current_category = None
-    
-    lines = content.split("\n")
-    for line in lines:
+    for line in content.split("\n"):
         line = line.strip()
-        
-        # Skip empty lines and headers
         if not line or line.startswith("===") or line.endswith("==="):
             continue
-            
-        # Detect sections
-        if line == "Overall Metrics:":
-            current_section = "overall"
-            continue
-        elif line == "Metrics by Reasoning Type:":
-            current_section = "metrics"
-            continue
-        elif line in ["combined:", "individual:"]:
-            current_category = line[:-1]
-            continue
-            
-        # Parse metrics
-        if current_section == "overall":
+
+        if ":" in line:
             if line.startswith("accuracy:") or line.startswith("mean_similarity:"):
                 key, value = line.split(":")
-                results["overall_metrics"][key.strip()] = float(value.strip())
-        elif current_section == "metrics" and current_category:
-            if line.startswith("  "):  # This is a reasoning type line
-                try:
-                    reasoning_type, metrics_str = line.strip().split(": ", 1)
-                    metrics_dict = eval(metrics_str)  # Convert string dict to actual dict
-                    results[current_category][reasoning_type] = metrics_dict
-                except Exception as e:
-                    print(f"Error parsing line: {line}")
-                    print(f"Error details: {str(e)}")
-                    continue
-    
-    return results
+                key = key.strip()
+                value = float(value.strip())
 
-def convert_results():
-    # Convert both Gemini and GPT results
-    for model in ["gemini", "gpt"]:
-        input_file = f"results/{model}_results.txt"
-        output_file = f"results/{model}_results.json"
-        
-        print(f"\nConverting {input_file} to JSON...")
-        
-        try:
-            # Read the input file
-            with open(input_file, "r") as f:
-                content = f.read()
-            
-            # Parse and convert to JSON
-            results = parse_results_to_json(content)
-            
-            # Write JSON output
-            with open(output_file, "w") as f:
-                json.dump(results, f, indent=2)
-            
-            print(f"Successfully converted {input_file} to {output_file}")
-            
-        except Exception as e:
-            print(f"Error converting {input_file}: {str(e)}")
+                if current_type is None:
+                    overall_metrics[key] = value
+                else:
+                    if current_type not in metrics:
+                        metrics[current_type] = {}
+                    metrics[current_type][key] = value
+            elif not any(
+                metric in line.lower() for metric in ["accuracy:", "mean_similarity:"]
+            ):
+                current_type = line.split(":")[0].strip()
+
+    return overall_metrics, metrics
+
+
+def format_json_output(overall_metrics, metrics):
+    output = []
+    output.append("Evaluation Results")
+    output.append("=================")
+    output.append("")
+    output.append(
+        "Overall GPT Metrics (using sentence-transformer for embedding similarity):"
+    )
+    output.append("--------------")
+    output.append("{")
+    output.append(f'  "accuracy": {overall_metrics.get("accuracy", 0)},')
+    output.append(f'  "mean_similarity": {overall_metrics.get("mean_similarity", 0)}')
+    output.append("}")
+    output.append("")
+    output.append("Metrics by Reasoning Type:")
+    output.append("------------------------")
+    output.append("{")
+
+    # Convert metrics to JSON format
+    metric_lines = []
+    for reasoning_type, values in metrics.items():
+        metric_lines.append(f'  "{reasoning_type}": {{')
+        metric_lines.append(f'    "accuracy": {values.get("accuracy", 0)},')
+        metric_lines.append(
+            f'    "mean_similarity": {values.get("mean_similarity", 0)}'
+        )
+        metric_lines.append(
+            "  }" + ("," if reasoning_type != list(metrics.keys())[-1] else "")
+        )
+
+    output.extend(metric_lines)
+    output.append("}")
+
+    return "\n".join(output)
+
+
+def main():
+    # Read the current GPT results
+    with open("results/gpt_results.txt", "r") as f:
+        content = f.read()
+
+    # Parse and convert to new format
+    overall_metrics, metrics = parse_text_metrics(content)
+    new_content = format_json_output(overall_metrics, metrics)
+
+    # Write the new format
+    with open("results/gpt_results_new.txt", "w") as f:
+        f.write(new_content)
+
+    print("Converted GPT results saved to 'results/gpt_results_new.txt'")
+
 
 if __name__ == "__main__":
-    convert_results()
+    main()

@@ -1,0 +1,22 @@
+// TFIDF-NN Architecture
+digraph {
+	rankdir=LR
+	node [fillcolor=lightblue shape=box style="rounded,filled"]
+	A [label="Input Prompt
+(Text)"]
+	B [label="TF-IDF
+Vectorizer"]
+	C [label="Feature Vector
+(Sparse Matrix)"]
+	D [label="Neural
+Network"]
+	E [label="Predicted
+Hop Count"]
+	F [label="Training Labels
+(Hop Counts)" fillcolor=lightgreen]
+	A -> B [label="Text input"]
+	B -> C [label=Vectorization]
+	C -> D [label=Features]
+	F -> D [label=Training]
+	D -> E [label=Prediction]
+}
