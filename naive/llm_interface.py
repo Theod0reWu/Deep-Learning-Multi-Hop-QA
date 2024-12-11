@@ -72,7 +72,10 @@ class LlamaInterface(LLMInterface):
         from huggingface_hub import login
         login(api_key)
 
-        self.model_name = "HF1BitLLM/Llama3-8B-1.58-100B-tokens"
+        # self.model_name = "HF1BitLLM/Llama3-8B-1.58-100B-tokens"
+        # self.model_name = "meta-llama/Llama-3.2-1B"
+        # self.model_name = "meta-llama/Llama-3.2-3B-Instruct"
+        self.model_name = "meta-llama/Llama-3.2-3B"
 
         from transformers import AutoTokenizer, AutoModelForCausalLM
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)

@@ -1,0 +1,71 @@
+=== Llama Evaluation Results ===
+
+Overall Metrics:
+accuracy: 0.0000
+mean_similarity: 0.1678
+
+Metrics by Reasoning Type:
+
+combined:
+  Multiple constraints: {'accuracy': 0.0, 'mean_similarity': 0.14405456124892774}
+  Numerical reasoning | Tabular reasoning | Multiple constraints: {'accuracy': 0.0, 'mean_similarity': 0.1643621384476622}
+  Numerical reasoning | Multiple constraints | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.18213974566270524}
+  Tabular reasoning | Multiple constraints | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.15638406441680022}
+  Multiple constraints | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.1660828754221174}
+  Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.19086967919021844}
+  Tabular reasoning | Multiple constraints: {'accuracy': 0.0, 'mean_similarity': 0.15153053587302565}
+  Numerical reasoning | Tabular reasoning | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.2738954722881317}
+  Numerical reasoning | Tabular reasoning | Multiple constraints | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.1624214323785375}
+  Tabular reasoning | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.1584448773852166}
+  Numerical reasoning | Tabular reasoning: {'accuracy': 0.0, 'mean_similarity': 0.22672520594104476}
+  Numerical reasoning: {'accuracy': 0.0, 'mean_similarity': 0.18287831228949}
+  Numerical reasoning | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.25172027622660004}
+  Numerical reasoning | Multiple constraints | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.19694516541702406}
+  Numerical reasoning | Tabular reasoning | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.19000237295404077}
+  Numerical reasoning | Multiple constraints: {'accuracy': 0.0, 'mean_similarity': 0.20756657541330373}
+  Post processing: {'accuracy': 0.0, 'mean_similarity': 0.21144794353416987}
+  Tabular reasoning: {'accuracy': 0.0, 'mean_similarity': 0.14813179940712162}
+  Tabular reasoning | Multiple constraints | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.2058903637031714}
+  Numerical reasoning | Multiple constraints | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.16942869843422578}
+  Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.116218201816082}
+  Numerical reasoning | Tabular reasoning | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.13301314227283}
+  Numerical reasoning | Tabular reasoning | Multiple constraints | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.3143070638179779}
+  Numerical reasoning | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.19985691797822558}
+  Multiple constraints | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.0977479623630643}
+  Numerical reasoning | Tabular reasoning | Multiple constraints | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.1955308737233281}
+  Multiple constraints | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.1933661951826742}
+  Numerical reasoning | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.1800063071506364}
+  Tabular reasoning | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.15929029850910106}
+  Tabular reasoning | Multiple constraints | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.07709537353366613}
+
+individual:
+  Multiple constraints: {'accuracy': 0.0, 'mean_similarity': 0.14405456124892774}
+  Numerical reasoning | Tabular reasoning | Multiple constraints: {'accuracy': 0.0, 'mean_similarity': 0.1643621384476622}
+  Numerical reasoning | Multiple constraints | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.18213974566270524}
+  Tabular reasoning | Multiple constraints | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.15638406441680022}
+  Multiple constraints | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.1660828754221174}
+  Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.19086967919021844}
+  Tabular reasoning | Multiple constraints: {'accuracy': 0.0, 'mean_similarity': 0.15153053587302565}
+  Numerical reasoning | Tabular reasoning | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.2738954722881317}
+  Numerical reasoning | Tabular reasoning | Multiple constraints | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.1624214323785375}
+  Tabular reasoning | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.1584448773852166}
+  Numerical reasoning | Tabular reasoning: {'accuracy': 0.0, 'mean_similarity': 0.22672520594104476}
+  Numerical reasoning: {'accuracy': 0.0, 'mean_similarity': 0.18287831228949}
+  Numerical reasoning | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.25172027622660004}
+  Numerical reasoning | Multiple constraints | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.19694516541702406}
+  Numerical reasoning | Tabular reasoning | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.19000237295404077}
+  Numerical reasoning | Multiple constraints: {'accuracy': 0.0, 'mean_similarity': 0.20756657541330373}
+  Post processing: {'accuracy': 0.0, 'mean_similarity': 0.21144794353416987}
+  Tabular reasoning: {'accuracy': 0.0, 'mean_similarity': 0.14813179940712162}
+  Tabular reasoning | Multiple constraints | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.2058903637031714}
+  Numerical reasoning | Multiple constraints | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.16942869843422578}
+  Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.116218201816082}
+  Numerical reasoning | Tabular reasoning | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.13301314227283}
+  Numerical reasoning | Tabular reasoning | Multiple constraints | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.3143070638179779}
+  Numerical reasoning | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.19985691797822558}
+  Multiple constraints | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.0977479623630643}
+  Numerical reasoning | Tabular reasoning | Multiple constraints | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.1955308737233281}
+  Multiple constraints | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.1933661951826742}
+  Numerical reasoning | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.1800063071506364}
+  Tabular reasoning | Post processing: {'accuracy': 0.0, 'mean_similarity': 0.15929029850910106}
+  Tabular reasoning | Multiple constraints | Post processing | Temporal reasoning: {'accuracy': 0.0, 'mean_similarity': 0.07709537353366613}
