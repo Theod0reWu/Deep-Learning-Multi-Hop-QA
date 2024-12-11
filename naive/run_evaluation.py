@@ -9,7 +9,7 @@ import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.dataset import get_frames_dataset
-from llm_interface import GeminiInterface, ChatGPTInterface
+from llm_interface import GeminiInterface, ChatGPTInterface, LlamaInterface
 from evaluator import Evaluator
 
 
@@ -25,6 +25,11 @@ def get_model(model_name: str):
         if not api_key:
             raise ValueError("Please set OPENAI_API_KEY environment variable")
         return ChatGPTInterface(api_key), "ChatGPT"
+    elif model_name == 'llama':
+        api_key = os.getenv("HUGGING_FACE_API_KEY")
+        if not api_key:
+            raise ValueError("Please set HUGGING_FACE_API_KEY environment variable")
+        return LlamaInterface(api_key), "Llama"
     else:
         raise ValueError("Invalid model name. Choose 'gemini' or 'gpt'")
 
@@ -35,14 +40,16 @@ def main():
     parser.add_argument(
         "model",
         type=str,
-        choices=["gemini", "gpt"],
-        help="Which model to use (gemini or gpt)",
+        choices=["gemini", "gpt", "llama"],
+        help="Which model to use (gemini, gpt or llama)",
     )
     args = parser.parse_args()
 
+    print("Initializing the model")
     # Initialize the specified model
     model, model_name = get_model(args.model)
 
+    print("loading the dataset")
     # Load test dataset
     test_df = get_frames_dataset()
 
@@ -59,6 +66,8 @@ def main():
     # Evaluate model
     evaluator = Evaluator(model, model_name)
     results = evaluator.evaluate(test_df)
+
+    print(results)
 
     # Save results
     with open(results_file, "w") as f:
