@@ -53,14 +53,42 @@ class BM25MultiHopRetriever:
         self.last_api_call = 0
         self.min_delay = 1.0  # Minimum delay between API calls in seconds
 
-    def _get_wiki_page(self, title: str) -> Optional[Tuple[str, str]]:
-        """Get Wikipedia page content, using cache if available.
+    # def _get_wiki_page(self, title: str) -> Optional[Tuple[str, str]]:
+    #     """Get Wikipedia page content, using cache if available.
+
+    #     Args:
+    #         title: The title of the Wikipedia page
+
+    #     Returns:
+    #         Optional[Tuple[str, str]]: A tuple of (title, content) if found, None if page doesn't exist
+    #     """
+    #     if title in self.doc_cache:
+    #         self.cache_hits += 1
+    #         self.logger.info(f"Cache hit for '{title}' (Total hits: {self.cache_hits})")
+    #         return self.doc_cache[title]
+
+    #     self.cache_misses += 1
+    #     self.logger.info(
+    #         f"Cache miss for '{title}' (Total misses: {self.cache_misses})"
+    #     )
+
+    #     page = self.wiki.page(title)
+    #     if not page.exists():
+    #         return None
+
+    #     # Cache the page content (truncated to 5000 chars to save memory)
+    #     content = (title, page.text[:5000])
+    #     self.doc_cache[title] = content
+    #     return content
+    def _get_wiki_page(self, title: str, query: str) -> Optional[Tuple[str, str]]:
+        """Get the most relevant content of a Wikipedia page based on the query.
 
         Args:
-            title: The title of the Wikipedia page
+            title: The title of the Wikipedia page.
+            query: The current search query.
 
         Returns:
-            Optional[Tuple[str, str]]: A tuple of (title, content) if found, None if page doesn't exist
+            Optional[Tuple[str, str]]: A tuple of (title, relevant_content) if found, None if the page doesn't exist.
         """
         if title in self.doc_cache:
             self.cache_hits += 1
@@ -76,10 +104,40 @@ class BM25MultiHopRetriever:
         if not page.exists():
             return None
 
-        # Cache the page content (truncated to 5000 chars to save memory)
-        content = (title, page.text[:5000])
-        self.doc_cache[title] = content
-        return content
+        full_text = page.text
+        if not full_text:
+            return None
+
+        # Split the text into sentences or paragraphs
+        sentences = nltk.sent_tokenize(full_text)
+
+        # Tokenize the sentences for BM25 ranking
+        tokenized_sentences = [self._tokenize(sentence) for sentence in sentences]
+
+        # Use BM25 to score sentences based on the query
+        bm25 = BM25Okapi(tokenized_sentences)
+        query_tokens = self._tokenize(query)
+        scores = bm25.get_scores(query_tokens)
+
+        # Pair sentences with scores and sort by relevance
+        ranked_sentences = sorted(
+            zip(sentences, scores), key=lambda x: x[1], reverse=True
+        )
+
+        # Select sentences until the combined length is approximately 5000 characters
+        relevant_content = []
+        total_length = 0
+
+        for sentence, score in ranked_sentences:
+            if total_length + len(sentence) > 5000:
+                break
+            relevant_content.append(sentence)
+            total_length += len(sentence)
+
+        # Join the selected sentences and cache the result
+        truncated_content = " ".join(relevant_content)
+        self.doc_cache[title] = (title, truncated_content)
+        return self.doc_cache[title]
 
     def _search_wikipedia(self, query: str):
         """Search Wikipedia and return page objects."""
@@ -179,7 +237,19 @@ class BM25MultiHopRetriever:
             # For first iteration, extract key terms from the original question
             if iteration == 0:
                 # Extract key entities and terms from the question
-                prompt = f"""Extract 3-5 key terms from this question that would make a good Wikipedia search query.
+                prompt = f"""
+                Here are some examples of links to extract from a given question:
+
+                - Question 1: If my future wife has the same first name as the 15th first lady of the United States' mother and her surname is the same as the second assassinated president's mother's maiden name, what is my future wife's name?
+                - Links for 1: ['https://en.wikipedia.org/wiki/President_of_the_United_States', 'https://en.wikipedia.org/wiki/James_Buchanan', 'https://en.wikipedia.org/wiki/Harriet_Lane', 'https://en.wikipedia.org/wiki/List_of_presidents_of_the_United_States_who_died_in_office', 'https://en.wikipedia.org/wiki/James_A._Garfield']
+
+                - Question 2: As of August 1, 2024, which country were holders of the FIFA World Cup the last time the UEFA Champions League was won by a club from London?
+                - Links for 2: ['https://en.wikipedia.org/wiki/FIFA_World_Cup', 'https://en.wikipedia.org/wiki/London', 'https://en.wikipedia.org/wiki/UEFA_Champions_League']
+
+                Keep in mind if part of a question asks for the name of a person who held a title at some place, the wikipedia for that place should contain information on the person's name.
+                Additionally, keep in mind the order of the links in the provided examples. For example, if a question asks for an event that occurred at the beginning of WW2, the first link should be the Wikipedia page for WW2.
+
+                Your task: Extract 3-5 key terms from the following question that would make a good Wikipedia search query.
 Question: {question}
 
 Return only the search terms, no explanation:"""
@@ -251,7 +321,7 @@ Query:"""
 
             # Combine context
             context = "\n\n".join(context_history)
-            prompt = f"""Based on the following context, answer the question. Include only information that is supported by the context.
+            prompt = f"""Based on the following context, answer the question. Include only information that is supported by the context. If you know the answer, return it directly.
 
 Question: {question}
 
@@ -293,7 +363,7 @@ Answer:"""
         num_iterations: int = 3,
         queries_per_iteration: int = 1,
         docs_per_query: int = 1,
-        relative_score_threshold: float = 0.8,
+        relative_score_threshold: float = 0.6,
         max_tokens: int = 2000,
     ):
         """
@@ -317,6 +387,7 @@ Answer:"""
 
         try:
             iteration = 0
+            self.logger.info(question)
             while (
                 len(self.context_docs) < num_iterations
                 and iteration < num_iterations * 2
@@ -345,7 +416,7 @@ Answer:"""
                 # Process search results and update cache
                 candidates = []
                 for page in search_results:
-                    wiki_content = self._get_wiki_page(page.title)
+                    wiki_content = self._get_wiki_page(page.title, search_query)
                     if wiki_content:
                         candidates.append(wiki_content)
                         # Add to processed_docs if not already there

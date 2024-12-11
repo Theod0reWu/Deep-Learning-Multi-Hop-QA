@@ -41,7 +41,7 @@ def get_frames_filtereddataset():
     return df_filtered
 
 
-def get_condensed_frames_dataset(samples_per_query=10):
+def get_condensed_frames_dataset(samples_per_query=5):
     """
     Creates a condensed dataset containing a fixed number of questions for each unique query_count.
 
@@ -84,3 +84,12 @@ def get_condensed_frames_dataset(samples_per_query=10):
 
     print(f"Condensed dataframe shape: {condensed_df.shape}")
     return condensed_df
+
+
+# def main():
+#     d = get_condensed_frames_dataset(5)
+#     print(d.head())
+
+
+# if __name__ == "__main__":
+#     main()

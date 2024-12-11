@@ -272,7 +272,7 @@ def main():
         "--samples", type=int, default=None, help="Number of samples to test"
     )
     parser.add_argument(
-        "--iterations", type=int, default=3, help="Number of retrieval iterations"
+        "--iterations", type=int, default=5, help="Number of retrieval iterations(hops)"
     )
     parser.add_argument(
         "--similarity-threshold",
@@ -301,7 +301,7 @@ def main():
             print(f"  {metric}: {value}")
 
     # Optional: Save results to CSV
-    results.to_csv("base_retriever_test_results.csv", index=False)
+    results.to_csv("base_retriever_test_results_5.csv", index=False)
 
 
 if __name__ == "__main__":
