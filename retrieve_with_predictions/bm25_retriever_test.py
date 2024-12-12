@@ -227,8 +227,9 @@ class BaseRetrieverTester:
                     prompt = row["Prompt"]
                     ground_truth_answer = row["Answer"]
                     predicted_hops = self.predict_hop_count(prompt)
-                    self.logger.info(f"Predicted hops for {prompt}: {predicted_hops}")
-
+                    self.logger.info(f"Predicted hops: {predicted_hops}")
+                    # Increment predicted hops
+                    predicted_hops = predicted_hops + 3
                     # Perform retrieval
                     answer, retrieved_docs, _, _, _, _ = retriever.retrieve(
                         prompt,
