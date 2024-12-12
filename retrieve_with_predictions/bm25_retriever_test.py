@@ -5,13 +5,14 @@ import argparse
 import pandas as pd
 import numpy as np
 import importlib.util
+import torch
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
 # Dynamically import the module
-module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch.py")
+module_path = os.path.join(project_root, "retrieve_with_predictions", "bm25_scratch.py")
 spec = importlib.util.spec_from_file_location("bm25_scratch", module_path)
 bm25_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bm25_module)
@@ -135,6 +136,40 @@ class BaseRetrieverTester:
             "retrieval_iterations": [],
             "total_tokens_used": [],
         }
+        self.hop_count_model = self.load_hop_count_model()
+
+    def load_hop_count_model(self):
+        """
+        Load the hop count prediction model from model_weights.pth.
+
+        Returns:
+            torch.nn.Module: The loaded PyTorch model.
+        """
+        model_path = os.path.join(project_root, "models", "model_weights.pth")
+        try:
+            model = torch.load(model_path, map_location=torch.device("cpu"))
+            model.eval()  # Set the model to evaluation mode
+            self.logger.info("Hop count prediction model loaded successfully.")
+            return model
+        except Exception as e:
+            self.logger.error(f"Error loading hop count model: {e}")
+            raise
+
+    def predict_hop_count(self, prompt):
+        """
+        Predict the number of hops required using the loaded model.
+
+        Args:
+            prompt (str): The input prompt.
+
+        Returns:
+            int: Predicted hop count.
+        """
+        # Example preprocessing; adjust as per your model requirements
+        input_data = torch.tensor([len(prompt.split())]).float().unsqueeze(0)
+        with torch.no_grad():
+            predicted_hops = self.hop_count_model(input_data).item()
+        return max(1, int(round(predicted_hops)))  # Ensure at least 1 hop
 
     def calculate_answer_similarity(
         self, ground_truth, generated_answer, threshold=0.8
@@ -168,7 +203,6 @@ class BaseRetrieverTester:
         self,
         model_names=["gemini-pro"],
         num_samples=None,
-        num_iterations=3,
         docs_per_query=2,
         similarity_threshold=0.8,
     ):
@@ -205,12 +239,13 @@ class BaseRetrieverTester:
                 for idx, row in test_data.iterrows():
                     prompt = row["Prompt"]
                     ground_truth_answer = row["Answer"]
+                    predicted_hops = self.predict_hop_count(prompt)
 
                     # Perform retrieval
                     answer, retrieved_docs, _, _, _, _ = retriever.retrieve(
                         prompt,
                         ground_truth_answer=ground_truth_answer,
-                        num_iterations=num_iterations,
+                        num_iterations=predicted_hops,
                         docs_per_query=docs_per_query,
                     )
 
