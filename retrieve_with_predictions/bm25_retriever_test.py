@@ -6,6 +6,8 @@ import pandas as pd
 import numpy as np
 import importlib.util
 import torch
+import pickle
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -16,6 +18,8 @@ module_path = os.path.join(project_root, "retrieve_with_predictions", "bm25_scra
 spec = importlib.util.spec_from_file_location("bm25_scratch", module_path)
 bm25_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bm25_module)
+MODEL_DIR = os.path.join(project_root, "models")
+from src.model import LinkPredictor, load_model
 
 # Use the imported module
 BM25MultiHopRetriever = bm25_module.BM25MultiHopRetriever
@@ -123,6 +127,7 @@ class BaseRetrieverTester:
 
         # Initialize sentence transformer for similarity
         self.similarity_model = SentenceTransformer("all-MiniLM-L6-v2")
+        self.hop_model, self.vectorizer = load_model(MODEL_DIR, input_size=300)
 
         # Initialize metrics storage
         self.results = {
@@ -136,40 +141,22 @@ class BaseRetrieverTester:
             "retrieval_iterations": [],
             "total_tokens_used": [],
         }
-        self.hop_count_model = self.load_hop_count_model()
-
-    def load_hop_count_model(self):
-        """
-        Load the hop count prediction model from model_weights.pth.
-
-        Returns:
-            torch.nn.Module: The loaded PyTorch model.
-        """
-        model_path = os.path.join(project_root, "models", "model_weights.pth")
-        try:
-            model = torch.load(model_path, map_location=torch.device("cpu"))
-            model.eval()  # Set the model to evaluation mode
-            self.logger.info("Hop count prediction model loaded successfully.")
-            return model
-        except Exception as e:
-            self.logger.error(f"Error loading hop count model: {e}")
-            raise
 
     def predict_hop_count(self, prompt):
-        """
-        Predict the number of hops required using the loaded model.
+        """Predict the number of hops required for retrieval"""
+        try:
+            # Vectorize the input
+            features = self.vectorizer.transform([prompt]).toarray()
 
-        Args:
-            prompt (str): The input prompt.
+            # Convert to tensor and predict
+            input_tensor = torch.tensor(features, dtype=torch.float32)
+            hop_count = self.hop_model(input_tensor).item()
 
-        Returns:
-            int: Predicted hop count.
-        """
-        # Example preprocessing; adjust as per your model requirements
-        input_data = torch.tensor([len(prompt.split())]).float().unsqueeze(0)
-        with torch.no_grad():
-            predicted_hops = self.hop_count_model(input_data).item()
-        return max(1, int(round(predicted_hops)))  # Ensure at least 1 hop
+            # Round to nearest integer and ensure it's at least 1
+            return max(1, round(hop_count))
+        except Exception as e:
+            self.logger.error(f"Error predicting hop count: {e}")
+            return 1  # Fallback to 1 hop
 
     def calculate_answer_similarity(
         self, ground_truth, generated_answer, threshold=0.8
@@ -240,6 +227,7 @@ class BaseRetrieverTester:
                     prompt = row["Prompt"]
                     ground_truth_answer = row["Answer"]
                     predicted_hops = self.predict_hop_count(prompt)
+                    self.logger.info(f"Predicted hops for {prompt}: {predicted_hops}")
 
                     # Perform retrieval
                     answer, retrieved_docs, _, _, _, _ = retriever.retrieve(
@@ -324,7 +312,6 @@ def main():
     results = tester.test_retriever(
         model_names=args.models,
         num_samples=args.samples,
-        num_iterations=args.iterations,
         similarity_threshold=args.similarity_threshold,
     )
 
@@ -337,7 +324,7 @@ def main():
             print(f"  {metric}: {value}")
 
     # Optional: Save results to CSV
-    results.to_csv("base_retriever_test_results_5.csv", index=False)
+    # results.to_csv("base_retriever_test_results_5.csv", index=False)
 
 
 if __name__ == "__main__":
