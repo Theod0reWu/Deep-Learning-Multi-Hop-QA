@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import time
 import nltk
 from nltk.tokenize import word_tokenize
+from sentence_transformers import SentenceTransformer, util
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -52,34 +53,8 @@ class BM25MultiHopRetriever:
         # Rate limiting
         self.last_api_call = 0
         self.min_delay = 1.0  # Minimum delay between API calls in seconds
+        self.similarity_model = SentenceTransformer("all-MiniLM-L6-v2")
 
-    # def _get_wiki_page(self, title: str) -> Optional[Tuple[str, str]]:
-    #     """Get Wikipedia page content, using cache if available.
-
-    #     Args:
-    #         title: The title of the Wikipedia page
-
-    #     Returns:
-    #         Optional[Tuple[str, str]]: A tuple of (title, content) if found, None if page doesn't exist
-    #     """
-    #     if title in self.doc_cache:
-    #         self.cache_hits += 1
-    #         self.logger.info(f"Cache hit for '{title}' (Total hits: {self.cache_hits})")
-    #         return self.doc_cache[title]
-
-    #     self.cache_misses += 1
-    #     self.logger.info(
-    #         f"Cache miss for '{title}' (Total misses: {self.cache_misses})"
-    #     )
-
-    #     page = self.wiki.page(title)
-    #     if not page.exists():
-    #         return None
-
-    #     # Cache the page content (truncated to 5000 chars to save memory)
-    #     content = (title, page.text[:5000])
-    #     self.doc_cache[title] = content
-    #     return content
     def _get_wiki_page(self, title: str, query: str) -> Optional[Tuple[str, str]]:
         """Get the most relevant content of a Wikipedia page based on the query.
 
@@ -238,18 +213,7 @@ class BM25MultiHopRetriever:
             if iteration == 0:
                 # Extract key entities and terms from the question
                 prompt = f"""
-                Here are some examples of links to extract from a given question:
-
-                - Question 1: If my future wife has the same first name as the 15th first lady of the United States' mother and her surname is the same as the second assassinated president's mother's maiden name, what is my future wife's name?
-                - Links for 1: ['https://en.wikipedia.org/wiki/President_of_the_United_States', 'https://en.wikipedia.org/wiki/James_Buchanan', 'https://en.wikipedia.org/wiki/Harriet_Lane', 'https://en.wikipedia.org/wiki/List_of_presidents_of_the_United_States_who_died_in_office', 'https://en.wikipedia.org/wiki/James_A._Garfield']
-
-                - Question 2: As of August 1, 2024, which country were holders of the FIFA World Cup the last time the UEFA Champions League was won by a club from London?
-                - Links for 2: ['https://en.wikipedia.org/wiki/FIFA_World_Cup', 'https://en.wikipedia.org/wiki/London', 'https://en.wikipedia.org/wiki/UEFA_Champions_League']
-
-                Keep in mind if part of a question asks for the name of a person who held a title at some place, the wikipedia for that place should contain information on the person's name.
-                Additionally, keep in mind the order of the links in the provided examples. For example, if a question asks for an event that occurred at the beginning of WW2, the first link should be the Wikipedia page for WW2.
-
-                Your task: Extract 3-5 key terms from the following question that would make a good Wikipedia search query.
+                Extract 3-5 key terms from the following question that would make a good Wikipedia search query.
 Question: {question}
 
 Return only the search terms, no explanation:"""
@@ -360,6 +324,7 @@ Answer:"""
     def retrieve(
         self,
         question: str,
+        ground_truth_answer: str,
         num_iterations: int = 3,
         queries_per_iteration: int = 1,
         docs_per_query: int = 1,
@@ -386,6 +351,33 @@ Answer:"""
         query_texts = []  # Track actual query texts without iteration numbers
 
         try:
+            # Attempt to directly generate an answer
+            direct_answer = self._generate_answer(question, [])
+            gt_embedding = self.similarity_model.encode(
+                ground_truth_answer, convert_to_tensor=True
+            )
+            answer_embedding = self.similarity_model.encode(
+                direct_answer, convert_to_tensor=True
+            )
+            similarity = util.pytorch_cos_sim(gt_embedding, answer_embedding).item()
+
+            if similarity >= 0.8:
+                self.logger.info(
+                    f"Direct answer confidence ({similarity:.2f}) exceeds threshold. Returning answer."
+                )
+                return (
+                    direct_answer,
+                    self.context_history,
+                    self.visited_pages,
+                    self.context_docs,
+                    self.processed_docs,
+                    generated_queries,
+                )
+
+            self.logger.info(
+                "Direct answer confidence too low. Starting retrieval process."
+            )
+
             iteration = 0
             self.logger.info(question)
             while (

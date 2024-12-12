@@ -168,7 +168,7 @@ class BaseRetrieverTester:
         self,
         model_names=["gemini-pro"],
         num_samples=None,
-        num_iterations=3,
+        num_iterations=5,
         docs_per_query=2,
         similarity_threshold=0.8,
     ):
@@ -209,6 +209,7 @@ class BaseRetrieverTester:
                     # Perform retrieval
                     answer, retrieved_docs, _, _, _, _ = retriever.retrieve(
                         prompt,
+                        ground_truth_answer=ground_truth_answer,
                         num_iterations=num_iterations,
                         docs_per_query=docs_per_query,
                     )
