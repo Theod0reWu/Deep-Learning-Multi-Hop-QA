@@ -1,5 +1,6 @@
 import wikipediaapi
 import google.generativeai as genai
+import openai
 from rank_bm25 import BM25Okapi
 from typing import List, Set, Tuple, Optional
 import os
@@ -16,7 +17,9 @@ logging.basicConfig(level=logging.INFO)
 
 
 class BM25MultiHopRetriever:
-    def __init__(self, gemini_api_key=None):
+    def __init__(
+        self, gemini_api_key=None, openai_api_key=None, llm_provider: str = "gemini"
+    ):
         """Initialize the BM25 Multi-hop Retriever."""
         self.logger = logging.getLogger("bm25_retriever")
         self.logger.setLevel(logging.INFO)
@@ -40,15 +43,43 @@ class BM25MultiHopRetriever:
         )
 
         # Configure Gemini API
-        self.logger.info("Configuring Gemini API...")
-        if gemini_api_key:
-            genai.configure(api_key=gemini_api_key)
-        else:
-            load_dotenv()
-            genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        # self.logger.info("Configuring Gemini API...")
+        # if gemini_api_key:
+        #     genai.configure(api_key=gemini_api_key)
+        # else:
+        #     load_dotenv()
+        #     genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-        self.model = genai.GenerativeModel("gemini-pro")
-        self.logger.info("Gemini API configured successfully")
+        # self.model = genai.GenerativeModel("gemini-pro")
+        # self.logger.info("Gemini API configured successfully")
+
+        # Configure LLM API
+        self.logger.info(f"Configuring {llm_provider.upper()} API...")
+        if llm_provider == "gemini":
+            # Gemini configuration (existing code)
+            if gemini_api_key:
+                genai.configure(api_key=gemini_api_key)
+            else:
+                load_dotenv()
+                genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+            self.model = genai.GenerativeModel("gemini-pro")
+            # self.generate_text = self._gemini_generate_text
+
+        elif llm_provider == "openai":
+            # OpenAI configuration
+            if openai_api_key:
+                openai.api_key = openai_api_key
+            else:
+                load_dotenv()
+                openai.api_key = os.getenv("OPENAI_API_KEY")
+
+            self.model = "gpt-3.5-turbo"  # Default model
+            # self.generate_text = self._openai_generate_text
+
+        else:
+            raise ValueError(f"Unsupported LLM provider: {llm_provider}")
+
+        self.logger.info(f"{llm_provider.upper()} API configured successfully")
 
         # Rate limiting
         self.last_api_call = 0
@@ -104,7 +135,7 @@ class BM25MultiHopRetriever:
         total_length = 0
 
         for sentence, score in ranked_sentences:
-            if total_length + len(sentence) > 5000:
+            if total_length + len(sentence) > 100000:
                 break
             relevant_content.append(sentence)
             total_length += len(sentence)
@@ -112,6 +143,7 @@ class BM25MultiHopRetriever:
         # Join the selected sentences and cache the result
         truncated_content = " ".join(relevant_content)
         self.doc_cache[title] = (title, truncated_content)
+        # self.doc_cache[title] = (title, full_text)
         return self.doc_cache[title]
 
     def _search_wikipedia(self, query: str):
@@ -213,10 +245,14 @@ class BM25MultiHopRetriever:
             if iteration == 0:
                 # Extract key entities and terms from the question
                 prompt = f"""
-                Extract 3-5 key terms from the following question that would make a good Wikipedia search query.
+                Here is an example of a question and how to extract key terms in order:
+                Question: If my future wife has the same first name as the 15th first lady of the United States' mother and her surname is the same as the second assassinated president's mother's maiden name, what is my future wife's name?
+                Terms in Order: President of the United States, 15th President of the United States, 1st lady of the 15th president, list of assasinated presidents, 2nd assasinated president
+
+                Extract 3-5 (or more, if needed) key subquestions from the following question that would make a good Wikipedia search query. Organize them in the order you think they should be visited in a Wikipedia search.
 Question: {question}
 
-Return only the search terms, no explanation:"""
+Return only the sub questions, no explanation:"""
 
                 response = self.model.generate_content(
                     prompt, safety_settings=safety_settings
@@ -285,7 +321,7 @@ Query:"""
 
             # Combine context
             context = "\n\n".join(context_history)
-            prompt = f"""Based on the following context, answer the question. Include only information that is supported by the context. If you know the answer, return it directly.
+            prompt = f"""Based on the following context, answer the question. Include only information that is supported by the context. If you know the answer without the given context, return it directly.
 
 Question: {question}
 
@@ -325,7 +361,7 @@ Answer:"""
         self,
         question: str,
         ground_truth_answer: str,
-        num_iterations: int = 3,
+        num_iterations: int,
         queries_per_iteration: int = 1,
         docs_per_query: int = 1,
         relative_score_threshold: float = 0.6,

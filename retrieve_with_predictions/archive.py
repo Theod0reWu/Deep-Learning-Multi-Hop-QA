@@ -26,6 +26,11 @@ class BM25MultiHopRetriever:
         self.cache_hits = 0  # Track cache hits
         self.cache_misses = 0  # Track cache misses
 
+        # Subquery cache to store results of intermediate queries
+        self.subquery_cache = {}  # {subquery: [retrieved_documents]}
+        self.subquery_cache_hits = 0
+        self.subquery_cache_misses = 0
+
         # Initialize NLTK
         try:
             nltk.data.find("tokenizers/punkt")
@@ -104,14 +109,15 @@ class BM25MultiHopRetriever:
         total_length = 0
 
         for sentence, score in ranked_sentences:
-            if total_length + len(sentence) > 10000:
+            if total_length + len(sentence) > 100000:
                 break
             relevant_content.append(sentence)
             total_length += len(sentence)
 
         # Join the selected sentences and cache the result
         truncated_content = " ".join(relevant_content)
-        self.doc_cache[title] = (title, truncated_content)
+        # self.doc_cache[title] = (title, truncated_content)
+        self.doc_cache[title] = (title, full_text)
         return self.doc_cache[title]
 
     def _search_wikipedia(self, query: str):
@@ -213,10 +219,14 @@ class BM25MultiHopRetriever:
             if iteration == 0:
                 # Extract key entities and terms from the question
                 prompt = f"""
-                Extract 3-5 key terms from the following question that would make a good Wikipedia search query.
+                Here is an example of a question and how to extract key terms in order:
+                Question: If my future wife has the same first name as the 15th first lady of the United States' mother and her surname is the same as the second assassinated president's mother's maiden name, what is my future wife's name?
+                Terms in Order: President of the United States, 15th President of the United States, 1st lady of the 15th president, list of assasinated presidents, 2nd assasinated president
+
+                Extract 3-5 (or more, if needed) key subquestions from the following question that would make a good Wikipedia search query. Organize them in the order you think they should be visited in a Wikipedia search.
 Question: {question}
 
-Return only the search terms, no explanation:"""
+Return only the sub questions, no explanation:"""
 
                 response = self.model.generate_content(
                     prompt, safety_settings=safety_settings
@@ -285,7 +295,7 @@ Query:"""
 
             # Combine context
             context = "\n\n".join(context_history)
-            prompt = f"""Based on the following context, answer the question. Include only information that is supported by the context. If you know the answer, return it directly.
+            prompt = f"""Based on the following context, answer the question. Include only information that is supported by the context. If you know the answer without the given context, return it directly.
 
 Question: {question}
 
@@ -321,15 +331,136 @@ Answer:"""
             self.logger.error(f"Error generating answer: {str(e)}")
             return "Sorry, I was unable to generate an answer due to an error."
 
+    def _store_subquery_result(
+        self, subquery: str, documents: List[str], original_question: str
+    ):
+        """
+        Store results for a subquery in the cache.
+
+        Args:
+            subquery (str): The subquery used to retrieve documents
+            documents (List[str]): List of retrieved document texts
+            original_question (str): The original question being answered
+        """
+        if subquery and documents:
+            # Store with metadata about the original question
+            self.subquery_cache[subquery] = {
+                "documents": documents,
+                "related_to": original_question,
+            }
+            self.logger.info(f"Stored subquery result for: {subquery}")
+
+    def _get_subquery_result(
+        self, subquery: str, original_question: str = None
+    ) -> Optional[List[str]]:
+        """
+        Retrieve cached results for a subquery.
+
+        Args:
+            subquery (str): The subquery to look up
+            original_question (str, optional): The original question for context
+
+        Returns:
+            Optional[List[str]]: Cached documents or None if not found
+        """
+        # Exact match
+        if subquery in self.subquery_cache:
+            self.subquery_cache_hits += 1
+            self.logger.info(f"Cache hit for subquery: {subquery}")
+            return self.subquery_cache[subquery]["documents"]
+
+        # Partial match if original_question is provided
+        if original_question:
+            for cached_query, cache_entry in self.subquery_cache.items():
+                if (
+                    cached_query.lower() in subquery.lower()
+                    or subquery.lower() in cached_query.lower()
+                    and cache_entry["related_to"].lower() in original_question.lower()
+                ):
+                    self.subquery_cache_hits += 1
+                    self.logger.info(f"Partial cache hit for subquery: {subquery}")
+                    return cache_entry["documents"]
+
+        self.subquery_cache_misses += 1
+        return None
+
+    def retrieve_multi_hop(
+        self,
+        question: str,
+        max_iterations: int = 3,
+        max_documents_per_iteration: int = 5,
+    ) -> List[str]:
+        """
+        Retrieve documents for a multi-hop question with subquery caching.
+
+        Args:
+            question (str): The original question to answer
+            max_iterations (int): Maximum number of query iterations
+            max_documents_per_iteration (int): Maximum documents to retrieve per iteration
+
+        Returns:
+            List[str]: Retrieved documents that help answer the question
+        """
+        context = ""
+        retrieved_documents = []
+        previous_queries = []
+
+        # First, check if the entire question can be answered from subquery cache
+        for cached_subquery, cache_entry in self.subquery_cache.items():
+            if cached_subquery.lower() in question.lower():
+                retrieved_documents.extend(cache_entry["documents"])
+                self.logger.info(
+                    f"Found cached result for similar subquery: {cached_subquery}"
+                )
+
+        for iteration in range(max_iterations):
+            # Generate a new search query
+            search_query = self._generate_search_query(
+                context, question, iteration, previous_queries
+            )
+
+            # Check subquery cache first
+            cached_result = self._get_subquery_result(search_query, question)
+            if cached_result:
+                retrieved_documents.extend(cached_result)
+                context += " ".join(cached_result)
+                previous_queries.append(search_query)
+                continue
+
+            # Retrieve documents for the query
+            iteration_docs = self._retrieve_documents(
+                search_query, max_documents=max_documents_per_iteration
+            )
+
+            if iteration_docs:
+                # Store subquery result in cache
+                self._store_subquery_result(search_query, iteration_docs, question)
+
+                retrieved_documents.extend(iteration_docs)
+                context += " ".join(iteration_docs)
+                previous_queries.append(search_query)
+
+            # Break if we have sufficient context or no new documents
+            if len(retrieved_documents) >= max_documents_per_iteration * max_iterations:
+                break
+
+        # Log subquery cache statistics
+        self.logger.info(
+            f"Subquery Cache Stats: Hits={self.subquery_cache_hits}, "
+            f"Misses={self.subquery_cache_misses}"
+        )
+
+        return retrieved_documents
+
     def retrieve(
         self,
         question: str,
         ground_truth_answer: str,
-        num_iterations: int = 3,
+        num_iterations: int,
         queries_per_iteration: int = 1,
         docs_per_query: int = 1,
         relative_score_threshold: float = 0.6,
-        max_tokens: int = 5000,
+        max_tokens: int = 2000,
     ):
         """
         Perform multi-hop retrieval.

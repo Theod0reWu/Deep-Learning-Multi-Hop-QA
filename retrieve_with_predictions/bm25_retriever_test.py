@@ -23,7 +23,11 @@ from src.model import LinkPredictor, load_model
 
 # Use the imported module
 BM25MultiHopRetriever = bm25_module.BM25MultiHopRetriever
-from src.dataset import get_condensed_frames_dataset
+from src.dataset import (
+    get_condensed_frames_dataset,
+    get_random_question,
+    get_frames_relevant_dataset,
+)
 
 # Optional LLM imports with graceful degradation
 try:
@@ -123,6 +127,8 @@ class BaseRetrieverTester:
         # Load dataset
         self.dataset = (
             dataset if dataset is not None else get_condensed_frames_dataset()
+            # dataset if dataset is not None else get_frames_relevant_dataset()
+            # dataset if dataset is not None else get_random_question()
         )
 
         # Initialize sentence transformer for similarity
@@ -220,7 +226,7 @@ class BaseRetrieverTester:
                     continue
 
                 # Create BM25 retriever with this LLM
-                retriever = BM25MultiHopRetriever()
+                retriever = BM25MultiHopRetriever(llm_provider="gemini")
 
                 # Test each prompt
                 for idx, row in test_data.iterrows():
@@ -229,7 +235,7 @@ class BaseRetrieverTester:
                     predicted_hops = self.predict_hop_count(prompt)
                     self.logger.info(f"Predicted hops: {predicted_hops}")
                     # Increment predicted hops
-                    predicted_hops = predicted_hops + 3
+                    predicted_hops = predicted_hops
                     # Perform retrieval
                     answer, retrieved_docs, _, _, _, _ = retriever.retrieve(
                         prompt,
@@ -237,6 +243,7 @@ class BaseRetrieverTester:
                         num_iterations=predicted_hops,
                         docs_per_query=docs_per_query,
                     )
+                    self.logger.info(f"Generated answer: {answer}")
 
                     # Calculate answer similarity
                     similarity, is_accurate = self.calculate_answer_similarity(

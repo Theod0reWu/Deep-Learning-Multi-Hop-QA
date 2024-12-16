@@ -1,4 +1,5 @@
 import pandas as pd
+import random
 
 
 def extract_keywords(links):
@@ -41,6 +42,31 @@ def get_frames_filtereddataset():
     return df_filtered
 
 
+def get_frames_relevant_dataset():
+    print("Reading dataset...")
+    df = pd.read_csv("hf://datasets/google/frames-benchmark/test.tsv", sep="\t")
+    print(f"Initial dataframe shape: {df.shape}")
+
+    # Keep only the 'Prompt' and 'wiki_links' columns
+    df_filtered = df.loc[:, ["Prompt", "reasoning_types", "Answer", "wiki_links"]]
+
+    # Ensure Prompt column contains strings
+    df_filtered["Prompt"] = df_filtered["Prompt"].astype(str)
+
+    # keep track of the number of wiki links as ground truth
+    df_filtered["query_count"] = df_filtered["wiki_links"].str.count(",") + 1
+
+    df_filtered["keywords"] = df_filtered["wiki_links"].apply(extract_keywords)
+    df_filtered = df_filtered[
+        (df_filtered["query_count"] >= 2) & (df_filtered["query_count"] <= 7)
+    ]
+
+    print(f"Final dataframe shape: {df_filtered.shape}")
+    print(f"Prompt column type: {df_filtered['Prompt'].dtype}")
+
+    return df_filtered
+
+
 def get_condensed_frames_dataset(samples_per_query=5):
     """
     Creates a condensed dataset containing a fixed number of questions for each unique query_count.
@@ -67,6 +93,9 @@ def get_condensed_frames_dataset(samples_per_query=5):
     df_filtered["query_count"] = df_filtered["wiki_links"].str.count(",") + 1
 
     df_filtered["keywords"] = df_filtered["wiki_links"].apply(extract_keywords)
+    df_filtered = df_filtered[
+        (df_filtered["query_count"] >= 2) & (df_filtered["query_count"] <= 7)
+    ]
     # Initialize an empty list to store sampled data
     sampled_dfs = []
 
@@ -84,6 +113,36 @@ def get_condensed_frames_dataset(samples_per_query=5):
 
     print(f"Condensed dataframe shape: {condensed_df.shape}")
     return condensed_df
+
+
+def get_random_question():
+    """
+    Returns one random question from the dataset.
+
+    Args:
+        df (pd.DataFrame): The dataset to select the question from.
+
+    Returns:
+        str: A random question (Prompt) from the dataset.
+    """
+    print("Reading dataset...")
+    df = pd.read_csv("hf://datasets/google/frames-benchmark/test.tsv", sep="\t")
+    print(f"Initial dataframe shape: {df.shape}")
+
+    # Keep only the 'Prompt' and 'wiki_links' columns
+    df_filtered = df.loc[:, ["Prompt", "Answer", "reasoning_types", "wiki_links"]]
+
+    # Ensure Prompt column contains strings
+    df_filtered["Prompt"] = df_filtered["Prompt"].astype(str)
+
+    # keep track of the number of wiki links as ground truth
+    df_filtered["query_count"] = df_filtered["wiki_links"].str.count(",") + 1
+
+    df_filtered["keywords"] = df_filtered["wiki_links"].apply(extract_keywords)
+
+    random_index = random.randint(0, len(df_filtered) - 1)
+    new_df = df_filtered.iloc[[random_index]]
+    return new_df
 
 
 # def main():
