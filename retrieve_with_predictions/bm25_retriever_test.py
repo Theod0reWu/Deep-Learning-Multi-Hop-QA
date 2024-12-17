@@ -196,7 +196,7 @@ class BaseRetrieverTester:
         self,
         model_names=["gemini-pro"],
         num_samples=None,
-        docs_per_query=2,
+        docs_per_query=1,
         similarity_threshold=0.8,
     ):
         """

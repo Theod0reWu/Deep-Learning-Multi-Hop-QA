@@ -328,7 +328,7 @@ Answer:"""
         num_iterations: int = 3,
         queries_per_iteration: int = 1,
         docs_per_query: int = 1,
-        relative_score_threshold: float = 0.6,
+        relative_score_threshold: float = 0.8,
         max_tokens: int = 5000,
     ):
         """
@@ -351,38 +351,10 @@ Answer:"""
         query_texts = []  # Track actual query texts without iteration numbers
 
         try:
-            # Attempt to directly generate an answer
-            # direct_answer = self._generate_answer(question, [])
-            # gt_embedding = self.similarity_model.encode(
-            #     ground_truth_answer, convert_to_tensor=True
-            # )
-            # answer_embedding = self.similarity_model.encode(
-            #     direct_answer, convert_to_tensor=True
-            # )
-            # similarity = util.pytorch_cos_sim(gt_embedding, answer_embedding).item()
-
-            # if similarity >= 0.8:
-            #     self.logger.info(
-            #         f"Direct answer confidence ({similarity:.2f}) exceeds threshold. Returning answer."
-            #     )
-            #     return (
-            #         direct_answer,
-            #         self.context_history,
-            #         self.visited_pages,
-            #         self.context_docs,
-            #         self.processed_docs,
-            #         generated_queries,
-            #     )
-
-            self.logger.info(
-                "Direct answer confidence too low. Starting retrieval process."
-            )
-
             iteration = 0
             self.logger.info(question)
             while (
-                len(self.context_docs) < num_iterations
-                and iteration < num_iterations * 2
+                iteration < num_iterations
             ):  # Allow up to 2x iterations to find enough docs
                 self.logger.info(
                     f"Starting iteration {iteration + 1}, documents collected: {len(self.context_docs)}/{num_iterations}"
@@ -437,10 +409,6 @@ Answer:"""
                 score_threshold = top_score * relative_score_threshold
 
                 # Take documents above the threshold
-                docs_to_add = min(
-                    docs_per_query, num_iterations - len(self.context_docs)
-                )
-                docs_added = 0
 
                 for title, content, score in ranked_docs:
                     # Triple check: not visited, not in context, and meets score threshold
@@ -454,18 +422,10 @@ Answer:"""
                         self.context_docs.append((title, context_content))
                         self.context_titles.add(title)  # Track title in context
                         self.visited_pages.add(title)  # Mark as visited
-                        docs_added += 1
 
                         self.logger.info(
                             f"Added document: {title} (score: {score:.3f})"
                         )
-
-                        # Break if we've added enough docs
-                        if (
-                            docs_added >= docs_to_add
-                            or len(self.context_docs) >= num_iterations
-                        ):
-                            break
 
                 iteration += 1
 

@@ -11,8 +11,9 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
 # Dynamically import the module
-module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch.py")
-spec = importlib.util.spec_from_file_location("bm25_scratch", module_path)
+# module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch.py")
+module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch_new.py")
+spec = importlib.util.spec_from_file_location("bm25_scratch_new", module_path)
 bm25_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bm25_module)
 
@@ -170,7 +171,7 @@ class BaseRetrieverTester:
         model_names=["gemini-pro"],
         num_samples=None,
         num_iterations=3,
-        docs_per_query=2,
+        docs_per_query=1,
         similarity_threshold=0.8,
     ):
         """
@@ -206,7 +207,6 @@ class BaseRetrieverTester:
                 for idx, row in test_data.iterrows():
                     prompt = row["Prompt"]
                     ground_truth_answer = row["Answer"]
-
                     # Perform retrieval
                     answer, retrieved_docs, _, _, _, _ = retriever.retrieve(
                         prompt,
@@ -274,7 +274,7 @@ def main():
         "--samples", type=int, default=None, help="Number of samples to test"
     )
     parser.add_argument(
-        "--iterations", type=int, default=5, help="Number of retrieval iterations(hops)"
+        "--iterations", type=int, default=3, help="Number of retrieval iterations(hops)"
     )
     parser.add_argument(
         "--similarity-threshold",
@@ -290,7 +290,7 @@ def main():
     results = tester.test_retriever(
         model_names=args.models,
         num_samples=args.samples,
-        num_iterations=args.iterations,
+        num_iterations=5,
         similarity_threshold=args.similarity_threshold,
     )
 
@@ -303,7 +303,7 @@ def main():
             print(f"  {metric}: {value}")
 
     # Optional: Save results to CSV
-    results.to_csv("base_retriever_test_results_5.csv", index=False)
+    # results.to_csv("base_retriever_test_results_5.csv", index=False)
 
 
 if __name__ == "__main__":
