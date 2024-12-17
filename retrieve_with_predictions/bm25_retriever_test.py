@@ -235,7 +235,7 @@ class BaseRetrieverTester:
                     predicted_hops = self.predict_hop_count(prompt)
                     self.logger.info(f"Predicted hops: {predicted_hops}")
                     # Increment predicted hops
-                    predicted_hops = predicted_hops
+                    predicted_hops = predicted_hops + 1
                     # Perform retrieval
                     answer, retrieved_docs, _, _, _, _ = retriever.retrieve(
                         prompt,

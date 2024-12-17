@@ -18,7 +18,7 @@ spec.loader.exec_module(bm25_module)
 
 # Use the imported module
 BM25MultiHopRetriever = bm25_module.BM25MultiHopRetriever
-from src.dataset import get_condensed_frames_dataset
+from src.dataset import get_condensed_frames_dataset, get_frames_relevant_dataset
 
 # Optional LLM imports with graceful degradation
 try:
@@ -118,6 +118,7 @@ class BaseRetrieverTester:
         # Load dataset
         self.dataset = (
             dataset if dataset is not None else get_condensed_frames_dataset()
+            # dataset if dataset is not None else get_frames_relevant_dataset()
         )
 
         # Initialize sentence transformer for similarity

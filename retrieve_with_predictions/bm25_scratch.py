@@ -135,7 +135,7 @@ class BM25MultiHopRetriever:
         total_length = 0
 
         for sentence, score in ranked_sentences:
-            if total_length + len(sentence) > 100000:
+            if total_length + len(sentence) > 10000:
                 break
             relevant_content.append(sentence)
             total_length += len(sentence)
@@ -245,11 +245,7 @@ class BM25MultiHopRetriever:
             if iteration == 0:
                 # Extract key entities and terms from the question
                 prompt = f"""
-                Here is an example of a question and how to extract key terms in order:
-                Question: If my future wife has the same first name as the 15th first lady of the United States' mother and her surname is the same as the second assassinated president's mother's maiden name, what is my future wife's name?
-                Terms in Order: President of the United States, 15th President of the United States, 1st lady of the 15th president, list of assasinated presidents, 2nd assasinated president
-
-                Extract 3-5 (or more, if needed) key subquestions from the following question that would make a good Wikipedia search query. Organize them in the order you think they should be visited in a Wikipedia search.
+                Extract 3-5 key terms from the following question that would make a good Wikipedia search query.
 Question: {question}
 
 Return only the sub questions, no explanation:"""
@@ -365,7 +361,7 @@ Answer:"""
         queries_per_iteration: int = 1,
         docs_per_query: int = 1,
         relative_score_threshold: float = 0.6,
-        max_tokens: int = 2000,
+        max_tokens: int = 5000,
     ):
         """
         Perform multi-hop retrieval.
@@ -388,27 +384,27 @@ Answer:"""
 
         try:
             # Attempt to directly generate an answer
-            direct_answer = self._generate_answer(question, [])
-            gt_embedding = self.similarity_model.encode(
-                ground_truth_answer, convert_to_tensor=True
-            )
-            answer_embedding = self.similarity_model.encode(
-                direct_answer, convert_to_tensor=True
-            )
-            similarity = util.pytorch_cos_sim(gt_embedding, answer_embedding).item()
+            # direct_answer = self._generate_answer(question, [])
+            # gt_embedding = self.similarity_model.encode(
+            #     ground_truth_answer, convert_to_tensor=True
+            # )
+            # answer_embedding = self.similarity_model.encode(
+            #     direct_answer, convert_to_tensor=True
+            # )
+            # similarity = util.pytorch_cos_sim(gt_embedding, answer_embedding).item()
 
-            if similarity >= 0.8:
-                self.logger.info(
-                    f"Direct answer confidence ({similarity:.2f}) exceeds threshold. Returning answer."
-                )
-                return (
-                    direct_answer,
-                    self.context_history,
-                    self.visited_pages,
-                    self.context_docs,
-                    self.processed_docs,
-                    generated_queries,
-                )
+            # if similarity >= 0.8:
+            #     self.logger.info(
+            #         f"Direct answer confidence ({similarity:.2f}) exceeds threshold. Returning answer."
+            #     )
+            #     return (
+            #         direct_answer,
+            #         self.context_history,
+            #         self.visited_pages,
+            #         self.context_docs,
+            #         self.processed_docs,
+            #         generated_queries,
+            #     )
 
             self.logger.info(
                 "Direct answer confidence too low. Starting retrieval process."

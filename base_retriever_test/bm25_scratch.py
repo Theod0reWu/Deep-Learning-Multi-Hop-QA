@@ -352,27 +352,27 @@ Answer:"""
 
         try:
             # Attempt to directly generate an answer
-            direct_answer = self._generate_answer(question, [])
-            gt_embedding = self.similarity_model.encode(
-                ground_truth_answer, convert_to_tensor=True
-            )
-            answer_embedding = self.similarity_model.encode(
-                direct_answer, convert_to_tensor=True
-            )
-            similarity = util.pytorch_cos_sim(gt_embedding, answer_embedding).item()
+            # direct_answer = self._generate_answer(question, [])
+            # gt_embedding = self.similarity_model.encode(
+            #     ground_truth_answer, convert_to_tensor=True
+            # )
+            # answer_embedding = self.similarity_model.encode(
+            #     direct_answer, convert_to_tensor=True
+            # )
+            # similarity = util.pytorch_cos_sim(gt_embedding, answer_embedding).item()
 
-            if similarity >= 0.8:
-                self.logger.info(
-                    f"Direct answer confidence ({similarity:.2f}) exceeds threshold. Returning answer."
-                )
-                return (
-                    direct_answer,
-                    self.context_history,
-                    self.visited_pages,
-                    self.context_docs,
-                    self.processed_docs,
-                    generated_queries,
-                )
+            # if similarity >= 0.8:
+            #     self.logger.info(
+            #         f"Direct answer confidence ({similarity:.2f}) exceeds threshold. Returning answer."
+            #     )
+            #     return (
+            #         direct_answer,
+            #         self.context_history,
+            #         self.visited_pages,
+            #         self.context_docs,
+            #         self.processed_docs,
+            #         generated_queries,
+            #     )
 
             self.logger.info(
                 "Direct answer confidence too low. Starting retrieval process."
