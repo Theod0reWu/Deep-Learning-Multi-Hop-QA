@@ -1,0 +1,47 @@
+2 Hops
+Model: gemini-pro
+  total_queries: 30
+  avg_retrieved_docs: 2.9
+  avg_retrieval_iterations: 2.9
+  avg_answer_similarity: 0.2835089527691404
+  accuracy_rate: 0.03333333333333333
+
+3 Hops
+Model: gemini-pro
+  total_queries: 30
+  avg_retrieved_docs: 3.8333333333333335
+  avg_retrieval_iterations: 3.8333333333333335
+  avg_answer_similarity: 0.30380613257487615
+  accuracy_rate: 0.13333333333333333
+
+4 hops
+Model: gemini-pro
+  total_queries: 30
+  avg_retrieved_docs: 4.8
+  avg_retrieval_iterations: 4.8
+  avg_answer_similarity: 0.28448136082539954
+  accuracy_rate: 0.06666666666666667
+
+5 hops
+Model: gemini-pro
+  total_queries: 30
+  avg_retrieved_docs: 5.733333333333333
+  avg_retrieval_iterations: 5.733333333333333
+  avg_answer_similarity: 0.2913363106238345
+  accuracy_rate: 0.03333333333333333
+
+6 hops
+Model: gemini-pro
+  total_queries: 30
+  avg_retrieved_docs: 6.5
+  avg_retrieval_iterations: 6.5
+  avg_answer_similarity: 0.2864577369454006
+  accuracy_rate: 0.06666666666666667
+
+7 hops
+Model: gemini-pro
+  total_queries: 30
+  avg_retrieved_docs: 7.733333333333333
+  avg_retrieval_iterations: 7.733333333333333
+  avg_answer_similarity: 0.2942132163792849
+  accuracy_rate: 0.03333333333333333
