@@ -28,7 +28,7 @@ from src.dataset import (
     get_condensed_frames_dataset,
     get_random_question,
     get_frames_relevant_dataset,
-    get_whole_batch_dataset
+    get_whole_batch_dataset,
 )
 
 # Optional LLM imports with graceful degradation
@@ -128,7 +128,7 @@ class BaseRetrieverTester:
 
         # Load dataset
         self.dataset = (
-            get_whole_batch_dataset(batch_size, batch_num)
+            get_whole_batch_dataset(batch_num, batch_size)
             # dataset if dataset is not None else get_frames_relevant_dataset()
             # dataset if dataset is not None else get_random_question()
         )
@@ -201,7 +201,7 @@ class BaseRetrieverTester:
         num_samples=None,
         docs_per_query=1,
         similarity_threshold=0.8,
-        inc_amnt=0
+        inc_amnt=0,
     ):
         """
         Test retriever with different LLMs.
@@ -343,17 +343,18 @@ def main():
     )
 
     parser.add_argument(
-    "--increment-amount",
-    type=int,
-    default=1,
-    help="Amount to increment the predicted hops by",
-)
+        "--increment-amount",
+        type=int,
+        default=1,
+        help="Amount to increment the predicted hops by",
+    )
 
     args = parser.parse_args()
 
     # Initialize and run tester
-    print(f"Loading dataset with batch_num={args.batch_num}, batch_size={args.batch_size}, and increment_amount={args.increment_amount}...")
-
+    print(
+        f"Loading dataset with batch_num={args.batch_num}, batch_size={args.batch_size}, and increment_amount={args.increment_amount}..."
+    )
 
     # Initialize and run tester
     tester = BaseRetrieverTester(batch_size=args.batch_size, batch_num=args.batch_num)
@@ -371,12 +372,12 @@ def main():
         for metric, value in metrics.items():
             print(f"  {metric}: {value}")
 
-    batch_report = tester.generate_batch_report(results)
-    print("\n--- Per Batch Report ---")
-    for batch, metrics in batch_report.items():
-        print(f"\nBatch: {batch}")
-        for metric, value in metrics.items():
-            print(f"  {metric}: {value}")
+    # batch_report = tester.generate_batch_report(results)
+    # print("\n--- Per Batch Report ---")
+    # for batch, metrics in batch_report.items():
+    #     print(f"\nBatch: {batch}")
+    #     for metric, value in metrics.items():
+    #         print(f"  {metric}: {value}")
 
     # Optional: Save results to CSV
     # results.to_csv("base_retriever_test_results_5.csv", index=False)
