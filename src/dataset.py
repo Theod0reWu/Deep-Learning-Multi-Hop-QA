@@ -82,6 +82,12 @@ def get_condensed_frames_dataset(samples_per_query=5):
     print("Reading dataset...")
     df = pd.read_csv("hf://datasets/google/frames-benchmark/test.tsv", sep="\t")
     print(f"Initial dataframe shape: {df.shape}")
+    df = df[df["Unnamed"] != 11]
+    df = df[df["Unnamed"] != 59]
+    df = df[df["Unnamed"] != 0]
+    df = df[df["Unnamed"] != 4]
+    df = df[df["Unnamed"] != 1]
+    df = df[df["Unnamed"] != 2]
 
     # Keep only the 'Prompt' and 'wiki_links' columns
     df_filtered = df.loc[:, ["Prompt", "Answer", "reasoning_types", "wiki_links"]]
