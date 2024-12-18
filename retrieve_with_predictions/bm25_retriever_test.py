@@ -146,6 +146,7 @@ class BaseRetrieverTester:
             "answer_accuracy": [],
             "retrieval_iterations": [],
             "total_tokens_used": [],
+            "query_count": [],
         }
 
     def predict_hop_count(self, prompt):
@@ -232,6 +233,7 @@ class BaseRetrieverTester:
                 for idx, row in test_data.iterrows():
                     prompt = row["Prompt"]
                     ground_truth_answer = row["Answer"]
+                    query_count = row["query_count"]
                     predicted_hops = self.predict_hop_count(prompt)
                     self.logger.info(f"Predicted hops: {predicted_hops}")
                     # Increment predicted hops
@@ -260,6 +262,7 @@ class BaseRetrieverTester:
                     self.results["answer_accuracy"].append(is_accurate)
                     self.results["retrieval_iterations"].append(len(retrieved_docs))
                     self.results["total_tokens_used"].append(None)
+                    self.results["query_count"].append(query_count)
 
             except Exception as e:
                 self.logger.error(f"Error testing {model_name}: {e}")
@@ -283,6 +286,23 @@ class BaseRetrieverTester:
             model_results = results_df[results_df["model"] == model]
 
             report[model] = {
+                "total_queries": len(model_results),
+                "avg_retrieved_docs": model_results["retrieved_docs"].apply(len).mean(),
+                "avg_retrieval_iterations": model_results[
+                    "retrieval_iterations"
+                ].mean(),
+                "avg_answer_similarity": model_results["answer_similarity"].mean(),
+                "accuracy_rate": model_results["answer_accuracy"].mean(),
+            }
+
+        return report
+
+    def generate_batch_report(self, results_df):
+        report = {}
+        for query_count in results_df["query_count"].unique():
+            model_results = results_df[results_df["query_count"] == query_count]
+
+            report[query_count] = {
                 "total_queries": len(model_results),
                 "avg_retrieved_docs": model_results["retrieved_docs"].apply(len).mean(),
                 "avg_retrieval_iterations": model_results[
@@ -328,6 +348,13 @@ def main():
     print("\n--- Base Retriever Multi-LLM Test Report ---")
     for model, metrics in report.items():
         print(f"\nModel: {model}")
+        for metric, value in metrics.items():
+            print(f"  {metric}: {value}")
+
+    batch_report = tester.generate_batch_report(results)
+    print("\n--- Per Batch Report ---")
+    for batch, metrics in batch_report.items():
+        print(f"\nBatch: {batch}")
         for metric, value in metrics.items():
             print(f"  {metric}: {value}")
 
