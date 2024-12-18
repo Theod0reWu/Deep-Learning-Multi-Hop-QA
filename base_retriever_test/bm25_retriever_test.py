@@ -295,7 +295,7 @@ def main():
         "--samples", type=int, default=None, help="Number of samples to test"
     )
     parser.add_argument(
-        "--iterations", type=int, default=2, help="Number of retrieval iterations(hops)"
+        "--iterations", type=int, default=4, help="Number of retrieval iterations(hops)"
     )
     parser.add_argument(
         "--similarity-threshold",
@@ -311,7 +311,7 @@ def main():
     results = tester.test_retriever(
         model_names=args.models,
         num_samples=args.samples,
-        num_iterations=2,
+        num_iterations=4,
         similarity_threshold=args.similarity_threshold,
     )
 
