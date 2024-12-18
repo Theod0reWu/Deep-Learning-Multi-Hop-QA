@@ -11,8 +11,8 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
 # Dynamically import the module
-# module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch.py")
 module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch.py")
+# module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch_new.py")
 spec = importlib.util.spec_from_file_location("bm25_scratch", module_path)
 bm25_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bm25_module)
@@ -171,7 +171,7 @@ class BaseRetrieverTester:
         self,
         model_names=["gemini-pro"],
         num_samples=None,
-        num_iterations=3,
+        num_iterations=2,
         docs_per_query=1,
         similarity_threshold=0.8,
     ):
@@ -203,6 +203,7 @@ class BaseRetrieverTester:
 
                 # Create BM25 retriever with this LLM
                 retriever = BM25MultiHopRetriever()
+                self.logger.info("Number of iterations to perform:", num_iterations)
 
                 # Test each prompt
                 for idx, row in test_data.iterrows():

@@ -424,9 +424,9 @@ Answer:"""
             #         generated_queries,
             #     )
 
-            self.logger.info(
-                "Direct answer confidence too low. Starting retrieval process."
-            )
+            # self.logger.info(
+            #     "Direct answer confidence too low. Starting retrieval process."
+            # )
 
             iteration = 0
             self.logger.info(question)
