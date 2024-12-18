@@ -12,8 +12,8 @@ sys.path.insert(0, project_root)
 
 # Dynamically import the module
 # module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch.py")
-module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch_new.py")
-spec = importlib.util.spec_from_file_location("bm25_scratch_new", module_path)
+module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch.py")
+spec = importlib.util.spec_from_file_location("bm25_scratch", module_path)
 bm25_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bm25_module)
 
@@ -136,6 +136,7 @@ class BaseRetrieverTester:
             "answer_accuracy": [],
             "retrieval_iterations": [],
             "total_tokens_used": [],
+            "query_count": [],
         }
 
     def calculate_answer_similarity(
@@ -207,6 +208,7 @@ class BaseRetrieverTester:
                 for idx, row in test_data.iterrows():
                     prompt = row["Prompt"]
                     ground_truth_answer = row["Answer"]
+                    query_count = row["query_count"]
                     # Perform retrieval
                     answer, retrieved_docs, _, _, _, _ = retriever.retrieve(
                         prompt,
@@ -230,6 +232,7 @@ class BaseRetrieverTester:
                     self.results["answer_accuracy"].append(is_accurate)
                     self.results["retrieval_iterations"].append(len(retrieved_docs))
                     self.results["total_tokens_used"].append(None)
+                    self.results["query_count"].append(query_count)
 
             except Exception as e:
                 self.logger.error(f"Error testing {model_name}: {e}")
@@ -264,6 +267,23 @@ class BaseRetrieverTester:
 
         return report
 
+    def generate_batch_report(self, results_df):
+        report = {}
+        for query_count in results_df["query_count"].unique():
+            model_results = results_df[results_df["query_count"] == query_count]
+
+            report[query_count] = {
+                "total_queries": len(model_results),
+                "avg_retrieved_docs": model_results["retrieved_docs"].apply(len).mean(),
+                "avg_retrieval_iterations": model_results[
+                    "retrieval_iterations"
+                ].mean(),
+                "avg_answer_similarity": model_results["answer_similarity"].mean(),
+                "accuracy_rate": model_results["answer_accuracy"].mean(),
+            }
+
+        return report
+
 
 def main():
     parser = argparse.ArgumentParser(description="Base Retriever Multi-LLM Tester")
@@ -274,7 +294,7 @@ def main():
         "--samples", type=int, default=None, help="Number of samples to test"
     )
     parser.add_argument(
-        "--iterations", type=int, default=3, help="Number of retrieval iterations(hops)"
+        "--iterations", type=int, default=2, help="Number of retrieval iterations(hops)"
     )
     parser.add_argument(
         "--similarity-threshold",
@@ -290,7 +310,7 @@ def main():
     results = tester.test_retriever(
         model_names=args.models,
         num_samples=args.samples,
-        num_iterations=5,
+        num_iterations=2,
         similarity_threshold=args.similarity_threshold,
     )
 
@@ -299,6 +319,12 @@ def main():
     print("\n--- Base Retriever Multi-LLM Test Report ---")
     for model, metrics in report.items():
         print(f"\nModel: {model}")
+        for metric, value in metrics.items():
+            print(f"  {metric}: {value}")
+    batch_report = tester.generate_batch_report(results)
+    print("\n--- Per Batch Report ---")
+    for batch, metrics in batch_report.items():
+        print(f"\nBatch: {batch}")
         for metric, value in metrics.items():
             print(f"  {metric}: {value}")
 

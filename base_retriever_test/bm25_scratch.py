@@ -213,6 +213,31 @@ class BM25MultiHopRetriever:
             if iteration == 0:
                 # Extract key entities and terms from the question
                 prompt = f"""
+                Here are some examples of questions, the required links to visit in order, and their answers:
+                Question: How many years earlier would Punxsutawney Phil have to be canonically alive to have made a Groundhog Day prediction in the same state as the US capitol?
+Links: [‘https://en.wikipedia.org/wiki/Punxsutawney_Phil', 'https://en.wikipedia.org/wiki/United_States_Capitol']
+Answer: 87
+
+Question: Imagine there is a building called Bronte tower whose height in feet is the same number as the dewey decimal classification for the Charlotte Bronte book that was published in 1847. Where would this building rank among tallest buildings in New York City, as of August 2024?
+Links: [‘https://en.wikipedia.org/wiki/Charlotte_Bront%C3%AB', 'https://en.wikipedia.org/wiki/Jane_Eyre', 'https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_New_York_City']
+Answer: 37th
+
+Question: What is the name of the vocalist from the first band to make it in the top 200 under the record label that produced the third studio album for Dismal Euphony?
+Links: [‘https://en.wikipedia.org/wiki/Dismal_Euphony', 'https://en.wikipedia.org/wiki/All_Little_Devils', 'https://en.wikipedia.org/wiki/Nuclear_Blast', 'https://en.wikipedia.org/wiki/Meshuggah']
+Answer: Jens Kidman
+
+Question: If my future wife has the same first name as the 15th first lady of the United States' mother and her surname is the same as the second assassinated president's mother's maiden name, what is my future wife's name?
+Links: [‘https://en.wikipedia.org/wiki/President_of_the_United_States', 'https://en.wikipedia.org/wiki/James_Buchanan', 'https://en.wikipedia.org/wiki/Harriet_Lane', 'https://en.wikipedia.org/wiki/List_of_presidents_of_the_United_States_who_died_in_office', 'https://en.wikipedia.org/wiki/James_A._Garfield']
+Answer: Jane Ballou
+
+Questions: Put these historical events in chronological order, starting with the earliest: The Beatles play Ed Sullivan, the fall of the Berlin Wall, The Great Depression, Atlanta Summer Games, World War I.
+Links: [‘https://en.wikipedia.org/wiki/World_War_I', 'https://en.wikipedia.org/wiki/1996_Summer_Olympics', 'https://en.wikipedia.org/wiki/Fall_of_the_Berlin_Wall#:~:text=The%20fall%20of%20the%20Berlin,restrictions%20were%20overwhelmed%20and%20discarded.', 'https://en.wikipedia.org/wiki/The_Beatles', 'https://en.wikipedia.org/wiki/Great_Depression']
+Answer: World War I, The Great Depression, The Beatles play Ed Sullivan, the fall of the Berlin Wall, Atlanta Summer Games.
+
+Question: As of July 1, 2024, what is the parent company of the current record label of the singer of Edge of Seventeen?
+Links: [‘https://en.wikipedia.org/wiki/Edge_of_Seventeen', 'https://en.wikipedia.org/wiki/Stevie_Nicks', 'https://en.wikipedia.org/wiki/Reprise_Records', 'https://en.wikipedia.org/wiki/Atlantic_Records', 'https://en.wikipedia.org/wiki/Modern_Records_(1980)', 'https://en.wikipedia.org/wiki/Warner_Music_Group', 'https://en.wikipedia.org/wiki/Warner_Records']
+Answer: Warner Music Group
+
                 Extract 3-5 key terms from the following question that would make a good Wikipedia search query.
 Question: {question}
 
@@ -227,6 +252,31 @@ Return only the search terms, no explanation:"""
             prompt = f"""Given this context: {context}
 And this question: {question}
 Previous queries used: {', '.join(previous_queries)}
+
+Here are some examples of questions, the required links to visit in order, and their answers:
+                Question: How many years earlier would Punxsutawney Phil have to be canonically alive to have made a Groundhog Day prediction in the same state as the US capitol?
+Links: [‘https://en.wikipedia.org/wiki/Punxsutawney_Phil', 'https://en.wikipedia.org/wiki/United_States_Capitol']
+Answer: 87
+
+Question: Imagine there is a building called Bronte tower whose height in feet is the same number as the dewey decimal classification for the Charlotte Bronte book that was published in 1847. Where would this building rank among tallest buildings in New York City, as of August 2024?
+Links: [‘https://en.wikipedia.org/wiki/Charlotte_Bront%C3%AB', 'https://en.wikipedia.org/wiki/Jane_Eyre', 'https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_New_York_City']
+Answer: 37th
+
+Question: What is the name of the vocalist from the first band to make it in the top 200 under the record label that produced the third studio album for Dismal Euphony?
+Links: [‘https://en.wikipedia.org/wiki/Dismal_Euphony', 'https://en.wikipedia.org/wiki/All_Little_Devils', 'https://en.wikipedia.org/wiki/Nuclear_Blast', 'https://en.wikipedia.org/wiki/Meshuggah']
+Answer: Jens Kidman
+
+Question: If my future wife has the same first name as the 15th first lady of the United States' mother and her surname is the same as the second assassinated president's mother's maiden name, what is my future wife's name?
+Links: [‘https://en.wikipedia.org/wiki/President_of_the_United_States', 'https://en.wikipedia.org/wiki/James_Buchanan', 'https://en.wikipedia.org/wiki/Harriet_Lane', 'https://en.wikipedia.org/wiki/List_of_presidents_of_the_United_States_who_died_in_office', 'https://en.wikipedia.org/wiki/James_A._Garfield']
+Answer: Jane Ballou
+
+Questions: Put these historical events in chronological order, starting with the earliest: The Beatles play Ed Sullivan, the fall of the Berlin Wall, The Great Depression, Atlanta Summer Games, World War I.
+Links: [‘https://en.wikipedia.org/wiki/World_War_I', 'https://en.wikipedia.org/wiki/1996_Summer_Olympics', 'https://en.wikipedia.org/wiki/Fall_of_the_Berlin_Wall#:~:text=The%20fall%20of%20the%20Berlin,restrictions%20were%20overwhelmed%20and%20discarded.', 'https://en.wikipedia.org/wiki/The_Beatles', 'https://en.wikipedia.org/wiki/Great_Depression']
+Answer: World War I, The Great Depression, The Beatles play Ed Sullivan, the fall of the Berlin Wall, Atlanta Summer Games.
+
+Question: As of July 1, 2024, what is the parent company of the current record label of the singer of Edge of Seventeen?
+Links: [‘https://en.wikipedia.org/wiki/Edge_of_Seventeen', 'https://en.wikipedia.org/wiki/Stevie_Nicks', 'https://en.wikipedia.org/wiki/Reprise_Records', 'https://en.wikipedia.org/wiki/Atlantic_Records', 'https://en.wikipedia.org/wiki/Modern_Records_(1980)', 'https://en.wikipedia.org/wiki/Warner_Music_Group', 'https://en.wikipedia.org/wiki/Warner_Records']
+Answer: Warner Music Group
 
 Generate a NEW and DIFFERENT search query (3-5 words) to help answer the question.
 The query should:
@@ -285,7 +335,7 @@ Query:"""
 
             # Combine context
             context = "\n\n".join(context_history)
-            prompt = f"""Based on the following context, answer the question. Include only information that is supported by the context. If you know the answer, return it directly. If the context does not provide ample information, answer to the best of your ability.
+            prompt = f"""Based on the following context, answer the question. Include only information that is supported by the context. If you know the answer, return it directly. If the context does not seem to provide ample information, answer to the best of your ability.
 
 Question: {question}
 

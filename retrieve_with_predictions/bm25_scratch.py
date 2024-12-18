@@ -367,7 +367,7 @@ Query:"""
 
             # Combine context
             context = "\n\n".join(context_history)
-            prompt = f"""Based on the following context, answer the question. Include only information that is supported by the context. If you know the answer without the given context, return it directly. If the context does not provide ample information, answer to the best of your ability.
+            prompt = f"""Based on the following context, answer the question. Include only information that is supported by the context. If you know the answer without the given context, return it directly. If the context does not seem to provide ample information, answer to the best of your ability.
 
 Question: {question}
 
