@@ -1,7 +1,0 @@
-langgraph>=0.0.15
-langchain-core>=0.1.15
-wikipedia-api>=0.6.0
-google-generativeai>=0.3.2
-rank-bm25>=0.2.2
-nltk>=3.8.1
-python-dotenv>=1.0.0
