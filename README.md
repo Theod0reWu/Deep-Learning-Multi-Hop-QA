@@ -54,4 +54,11 @@ python base_retriever_test/bm25_retriever_test.py --models=<gemini-pro> --sample
 # References
 [1] Google. “Frames Benchmark: Multi-hop QA Dataset,” arXiv preprint, 2024. Available: https://arxiv.org/pdf/2409.12941 <br>
 [2] Krishna et al. “Fact, Fetch, and Reason: A Unified Evaluation of Retrieval-Augmented Generation,” arXiv preprint, 2024. Available: https://arxiv.org/html/2409.12941 <br>
-[3] Yu, Z., Liu, T., Wei, Z., et al. “RankRAG: Unifying Context Rank-ing with Retrieval-Augmented Generation in LLMs,” arXiv preprint,2023. Available: https://arxiv.org/abs/2407.02485 <br>
+[3] Yu, Z., Liu, T., Wei, Z., et al. “RankRAG: Unifying Context Ranking with Retrieval-Augmented Generation in LLMs,” arXiv preprint, 2023. Available: https://arxiv.org/abs/2407.02485 <br>
+[4] Stephen E. Robertson, Steve Walker, Susan Jones, Micheline Hancock-Beaulieu, and Mike Gatford. “Okapi at TREC-3,” Proceedings of the Third Text REtrieval Conference (TREC 1994), November 1994. Gaithersburg, USA. <br>
+[5] MediaWiki. “API:Opensearch,” 2024. Available: https://www.mediawiki.org/wiki/API:Opensearch <br>
+[6] LangChain. “Planning Agents,” 2024. Available: https://blog.langchain.dev/planning-agents/ <br>
+[7] LangChain. “Agent Supervisor: Create Tools,” 2024. Available: https://langchain-ai.github.io/langgraph/tutorials/multi_agent/agent_supervisor/#create-tools <br>
+[8] J. Briggs. “LangGraph Research Agent,” 2024. Available: https://www.pinecone.io/learn/langgraph-research-agent/ <br>
+[9] Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, Clemens Winter, Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. “Language Models are Few-Shot Learners,” arXiv preprint, 2020. Available: https://doi.org/10.48550/arXiv.2005.14165 <br>
+[10] L. Lacy. “GPT-4.0 and Gemini 1.5 Pro: How the New AI Models Compare,” CNET, May 25, 2024. Available: https://www.cnet.com/tech/services-and-software/gpt-4o-and-gemini-1-5-pro-how-the-new-ai-models-compare/ <br>
