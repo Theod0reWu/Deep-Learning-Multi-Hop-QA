@@ -1,44 +1,44 @@
 --- Base Retriever Multi-LLM Test Report ---
 Prediction value: p
 Model: gemini-pro
-  total_queries: 50
-  avg_retrieved_docs: 4.48
-  avg_retrieval_iterations: 4.48
-  avg_answer_similarity: 0.19780278559774161
-  accuracy_rate: 0.02
+  total_queries: 36
+  avg_retrieved_docs: 4.472222222222222
+  avg_retrieval_iterations: 4.472222222222222
+  avg_answer_similarity: 0.18126728478819132
+  accuracy_rate: 0.0
 
 --- Base Retriever Multi-LLM Test Report ---
 Prediction value: p + 1
 Model: gemini-pro
-  total_queries: 50
-  avg_retrieved_docs: 4.46
-  avg_retrieval_iterations: 4.46
-  avg_answer_similarity: 0.2311125521361828
+  total_queries: 36
+  avg_retrieved_docs: 5.5
+  avg_retrieval_iterations: 5.5
+  avg_answer_similarity: 0.2336630358412448
   accuracy_rate: 0.0
 
 --- Base Retriever Multi-LLM Test Report ---
 Prediction value: p + 2
 Model: gemini-pro
-  total_queries: 50
-  avg_retrieved_docs: 4.46
-  avg_retrieval_iterations: 4.46
-  avg_answer_similarity: 0.20451649477705358
-  accuracy_rate: 0.04
+  total_queries: 36
+  avg_retrieved_docs: 6.333333333333333
+  avg_retrieval_iterations: 6.333333333333333
+  avg_answer_similarity: 0.22582701024495894
+  accuracy_rate: 0.0
 
 --- Base Retriever Multi-LLM Test Report ---
 Prediction value: p + 3
 Model: gemini-pro
-  total_queries: 50
-  avg_retrieved_docs: 4.5
-  avg_retrieval_iterations: 4.5
-  avg_answer_similarity: 0.19831733752042055
-  accuracy_rate: 0.02
+  total_queries: 36
+  avg_retrieved_docs: 7.5
+  avg_retrieval_iterations: 7.5
+  avg_answer_similarity: 0.24701016665332848
+  accuracy_rate: 0.0
 
 --- Base Retriever Multi-LLM Test Report ---
 Prediction value: p + 4
 Model: gemini-pro
-  total_queries: 50
-  avg_retrieved_docs: 4.46
-  avg_retrieval_iterations: 4.46
-  avg_answer_similarity: 0.21727498589083552
-  accuracy_rate: 0.02
+  total_queries: 36
+  avg_retrieved_docs: 8.444444444444445
+  avg_retrieval_iterations: 8.444444444444445
+  avg_answer_similarity: 0.2040955428706689
+  accuracy_rate: 0.0

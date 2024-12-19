@@ -1,0 +1,8 @@
+--- Base Retriever Multi-LLM Test Report ---
+
+Model: gemini-pro
+  total_queries: 80
+  avg_retrieved_docs: 4.5375
+  avg_retrieval_iterations: 4.5375
+  avg_answer_similarity: 0.2611375933745876
+  accuracy_rate: 0.0625

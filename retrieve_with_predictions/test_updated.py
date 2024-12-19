@@ -243,6 +243,7 @@ class BaseRetrieverTester:
                     query_count = row["query_count"]
                     predicted_hops = self.predict_hop_count(prompt)
                     self.logger.info(f"Predicted hops: {predicted_hops}")
+                    self.logger.info(f"Increment amount: {inc_amnt}")
                     # Increment predicted hops
                     predicted_hops += inc_amnt
                     # Perform retrieval
@@ -366,6 +367,7 @@ def main():
         model_names=args.models,
         num_samples=args.samples,
         similarity_threshold=args.similarity_threshold,
+        inc_amnt=args.increment_amount,
     )
 
     # Generate and print report
