@@ -1,0 +1,44 @@
+--- Base Retriever Multi-LLM Test Report ---
+Prediction value: p
+Model: gemini-pro
+  total_queries: 14
+  avg_retrieved_docs: 4.571428571428571
+  avg_retrieval_iterations: 4.571428571428571
+  avg_answer_similarity: 0.07847071359200138
+  accuracy_rate: 0.0
+
+--- Base Retriever Multi-LLM Test Report ---
+Prediction value: p + 1
+Model: gemini-pro
+  total_queries: 14
+  avg_retrieved_docs: 5.571428571428571
+  avg_retrieval_iterations: 5.571428571428571
+  avg_answer_similarity: 0.07850003794633917
+  accuracy_rate: 0.0
+
+--- Base Retriever Multi-LLM Test Report ---
+Prediction value: p + 2
+Model: gemini-pro
+  total_queries: 14
+  avg_retrieved_docs: 6.571428571428571
+  avg_retrieval_iterations: 6.571428571428571
+  avg_answer_similarity: 0.08471798171688404
+  accuracy_rate: 0.0
+
+--- Base Retriever Multi-LLM Test Report ---
+Prediction value: p + 3
+Model: gemini-pro
+  total_queries: 14
+  avg_retrieved_docs: 7.571428571428571
+  avg_retrieval_iterations: 7.571428571428571
+  avg_answer_similarity: 0.10985491152054497
+  accuracy_rate: 0.0
+
+--- Base Retriever Multi-LLM Test Report ---
+Prediction value: p + 4
+Model: gemini-pro
+  total_queries: 14
+  avg_retrieved_docs: 8.571428571428571
+  avg_retrieval_iterations: 8.571428571428571
+  avg_answer_similarity: 0.12460376481924738
+  accuracy_rate: 0.0

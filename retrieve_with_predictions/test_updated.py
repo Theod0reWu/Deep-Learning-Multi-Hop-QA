@@ -130,7 +130,7 @@ class BaseRetrieverTester:
         # Load dataset
         self.dataset = (
             filter_by_reasoning_type(
-                get_condensed_frames_dataset(), "Numerical reasoning"
+                get_condensed_frames_dataset(), "Temporal reasoning"
             )
             # get_whole_batch_dataset(batch_num, batch_size)
             # dataset if dataset is not None else get_frames_relevant_dataset()
