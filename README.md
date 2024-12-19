@@ -51,6 +51,20 @@ python naive/run_evaluation model=<gemini, gpt or llama>
 python base_retriever_test/bm25_retriever_test.py --models=<gemini-pro> --samples=<number of samples to test> --similarity-threshold=<Similarity threshold for answer accuracy>
 ```
 
+# Retriever with predictions
+This is the general command for running the retriever using our predictive model for the number of iterations, or retrieval depth. Simply modify increment-amount to whatever value is desired (0 is p, 1 is p + 1, etc.).
+```
+python test_updated.py --batch-size 10 --batch-num 2 --increment-amount 0
+```
+Note that the current flow for the predictive retriever tests based on one reasoning type at a time. Our dataset.py, located in the src directory, offers multiple options of what data we want to test. For the current configuration, the reasoning type is controlled by altering the string at line 131:
+```
+        self.dataset = (
+            filter_by_reasoning_type(
+                get_condensed_frames_dataset(), "Tabular reasoning"
+            )
+```
+Simply change "Tabular reasoning" to whatever the desired reasoning type is.
+
 # References
 [1] Google. “Frames Benchmark: Multi-hop QA Dataset,” arXiv preprint, 2024. Available: https://arxiv.org/pdf/2409.12941 <br>
 [2] Krishna et al. “Fact, Fetch, and Reason: A Unified Evaluation of Retrieval-Augmented Generation,” arXiv preprint, 2024. Available: https://arxiv.org/html/2409.12941 <br>
