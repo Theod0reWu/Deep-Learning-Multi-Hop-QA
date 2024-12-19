@@ -46,6 +46,11 @@ Run the following command from the root directory:
 python naive/run_evaluation model=<gemini, gpt or llama>
 ```
 
+# Base retriever
+```
+python base_retriever_test/bm25_retriever_test.py --models=<gemini-pro> --samples=<number of samples to test> --similarity-threshold=<Similarity threshold for answer accuracy>
+```
+
 # References
 [1] Google. “Frames Benchmark: Multi-hop QA Dataset,” arXiv preprint, 2024. Available: https://arxiv.org/pdf/2409.12941 <br>
 [2] Krishna et al. “Fact, Fetch, and Reason: A Unified Evaluation of Retrieval-Augmented Generation,” arXiv preprint, 2024. Available: https://arxiv.org/html/2409.12941 <br>
