@@ -1,0 +1,8 @@
+Model: gemini-pro
+Using prediction value: p
+  total_queries: 50
+  avg_retrieved_docs: 4.54
+  avg_retrieval_iterations: 4.54
+  avg_answer_similarity: 0.21357733951881527
+  accuracy_rate: 0.04
+

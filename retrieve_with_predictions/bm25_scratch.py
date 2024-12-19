@@ -411,7 +411,7 @@ Answer:"""
         queries_per_iteration: int = 1,
         docs_per_query: int = 1,
         relative_score_threshold: float = 0.6,
-        max_tokens: int = 5000,
+        max_tokens: int = 10000,
     ):
         """
         Perform multi-hop retrieval.

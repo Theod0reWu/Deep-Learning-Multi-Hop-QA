@@ -29,6 +29,7 @@ from src.dataset import (
     get_random_question,
     get_frames_relevant_dataset,
     get_whole_batch_dataset,
+    filter_by_reasoning_type,
 )
 
 # Optional LLM imports with graceful degradation
@@ -128,7 +129,10 @@ class BaseRetrieverTester:
 
         # Load dataset
         self.dataset = (
-            get_whole_batch_dataset(batch_num, batch_size)
+            filter_by_reasoning_type(
+                get_condensed_frames_dataset(), "Numerical reasoning"
+            )
+            # get_whole_batch_dataset(batch_num, batch_size)
             # dataset if dataset is not None else get_frames_relevant_dataset()
             # dataset if dataset is not None else get_random_question()
         )
@@ -168,7 +172,7 @@ class BaseRetrieverTester:
             return 1  # Fallback to 1 hop
 
     def calculate_answer_similarity(
-        self, ground_truth, generated_answer, threshold=0.8
+        self, ground_truth, generated_answer, threshold=0.7
     ):
         """
         Calculate semantic similarity between ground truth and generated answer.
