@@ -197,12 +197,35 @@ def get_random_question():
     new_df = df_filtered.iloc[[random_index]]
     return new_df
 
+def filter_by_reasoning_type(df, reasoning_type):
+    """
+    Filters the dataset based on the given reasoning type.
+
+    Args:
+        df (pd.DataFrame): The dataset containing the 'reasoning_types' column.
+        reasoning_type (str): The reasoning type to filter for.
+
+    Returns:
+        pd.DataFrame: A filtered dataset containing only rows with the specified reasoning type.
+    """
+    # Ensure 'reasoning_types' column contains strings
+    df["reasoning_types"] = df["reasoning_types"].astype(str)
+
+    # Filter rows where the reasoning type is present
+    filtered_df = df[df["reasoning_types"].str.contains(reasoning_type, case=False, na=False)]
+    return filtered_df
+
 
 def main():
-    d = get_whole_batch_dataset(2, 10)
-    print(d.shape)
-    pd.set_option('display.max_columns', None)  # None means no limit
-    print(d.head(n = 30))
+    # d = get_whole_batch_dataset(2, 10)
+    # print(d.shape)
+    # pd.set_option('display.max_columns', None)  # None means no limit
+    # print(d.head(n = 30))
+    df = get_frames_dataset()  # Load the dataset
+    reasoning_type = "Numerical"  # Specify the reasoning type to filter
+    filtered_df = filter_by_reasoning_type(df, reasoning_type)  # Filter the dataset
+    print(f"Filtered dataframe shape: {filtered_df.shape}")
+    print(filtered_df.head())
 
 
 if __name__ == "__main__":
