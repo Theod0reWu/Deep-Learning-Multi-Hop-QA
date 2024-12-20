@@ -12,7 +12,6 @@ sys.path.insert(0, project_root)
 
 # Dynamically import the module
 module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch.py")
-# module_path = os.path.join(project_root, "base_retriever_test", "bm25_scratch_new.py")
 spec = importlib.util.spec_from_file_location("bm25_scratch", module_path)
 bm25_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bm25_module)
@@ -214,7 +213,7 @@ class BaseRetrieverTester:
                     answer, retrieved_docs, _, _, _, _ = retriever.retrieve(
                         prompt,
                         ground_truth_answer=ground_truth_answer,
-                        num_iterations=num_iterations,
+                        num_iterations=7,
                         docs_per_query=docs_per_query,
                     )
 

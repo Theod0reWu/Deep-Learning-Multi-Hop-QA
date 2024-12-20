@@ -12,6 +12,13 @@ Model: gemini-pro: 5 queries
   avg_answer_similarity: 0.31549535498574927
   accuracy_rate: 0.09259259259259259
 
+  Model: gemini-pro: 7 queries
+  total_queries: 54
+  avg_retrieved_docs: 7.74468085106383
+  avg_retrieval_iterations: 7.74468085106383
+  avg_answer_similarity: 0.2636526665049242
+  accuracy_rate: 0.05673758865248227
+
 Model: gemini-pro: predicted hops
   total_queries: 54
   avg_retrieved_docs: 4.166666666666667

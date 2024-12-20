@@ -67,7 +67,7 @@ def get_frames_relevant_dataset():
     return df_filtered
 
 
-def get_condensed_frames_dataset(samples_per_query=20):
+def get_condensed_frames_dataset(samples_per_query=5):
     """
     Creates a condensed dataset containing a fixed number of questions for each unique query_count.
 
@@ -99,9 +99,9 @@ def get_condensed_frames_dataset(samples_per_query=20):
     df_filtered["query_count"] = df_filtered["wiki_links"].str.count(",") + 1
 
     df_filtered["keywords"] = df_filtered["wiki_links"].apply(extract_keywords)
-    df_filtered = df_filtered[
-        (df_filtered["query_count"] >= 2) & (df_filtered["query_count"] <= 7)
-    ]
+    # df_filtered = df_filtered[
+    #     (df_filtered["query_count"] >= 2) & (df_filtered["query_count"] <= 7)
+    # ]
     # Initialize an empty list to store sampled data
     sampled_dfs = []
 
@@ -167,7 +167,6 @@ def get_whole_batch_dataset(batch_num, batch_size=None):
     return df_filtered
 
 
-
 def get_random_question():
     """
     Returns one random question from the dataset.
@@ -197,6 +196,7 @@ def get_random_question():
     new_df = df_filtered.iloc[[random_index]]
     return new_df
 
+
 def filter_by_reasoning_type(df, reasoning_type):
     """
     Filters the dataset based on the given reasoning type.
@@ -212,7 +212,10 @@ def filter_by_reasoning_type(df, reasoning_type):
     df["reasoning_types"] = df["reasoning_types"].astype(str)
 
     # Filter rows where the reasoning type is present
-    filtered_df = df[df["reasoning_types"].str.contains(reasoning_type, case=False, na=False)]
+    filtered_df = df[
+        df["reasoning_types"].str.contains(reasoning_type, case=False, na=False)
+    ]
+    print("Size of df: ", filtered_df.shape)
     return filtered_df
 
 
