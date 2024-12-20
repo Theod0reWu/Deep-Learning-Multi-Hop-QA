@@ -2,6 +2,8 @@
 
 Retrieval-Augmented Generation (RAG) systems are an increasingly popular application for large language models. Multi-hop reasoning is an important class of tasks within RAG that requires reasoning over multiple documents to answer complex queries. Current RAG systems struggle with multi-hop reasoning tasks without massive amounts of context. As such, agents for completing multi-hop RAG tasks can become expensive, redundant, and inefficient at scale.  We introduce a metric - Accuracy Efficiency Index (AEI) - by which we measure this trade-off. Our work shows that using the predicted hop count plus a certain amount of retrieval steps can lead to increased accuracy while minimizing retrieval costs. By analyzing performance changes as additional context is included, our work provides insight into scalable and cost-efficient implementations for RAG systems.
 
+[View our full paper] (https://github.com/Theod0reWu/Deep-Learning-Multi-Hop-QA/blob/main/link_predictor_model_graph.pdf)
+
 # Dataset: Frames
 
 We use the Frames Dataset introduced in the "Fact, Fetch, and Reason" paper, which consists of multi-hop reason-ing questions requiring factual retrieval from structured knowledge sources like Wikipedia. These questions and their associated links and answers are organized in a CSV file. We imported the dataset by way of hugging face and pandas. The questions are organized into categories based on the type of reasoning required to answer them. 
